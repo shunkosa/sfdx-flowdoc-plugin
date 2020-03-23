@@ -1,0 +1,7 @@
+{
+  "errorParamNotFound": "--name or argument is required.",
+  "commandDescription": "print a greeting and your org IDs",
+  "nameFlagDescription": "developer name of flow",
+  "outdirFlagDescription": "output directory",
+  "errorNoOrgResults": "No results found for the org '%s'."
+}

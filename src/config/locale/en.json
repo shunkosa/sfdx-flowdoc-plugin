@@ -1,0 +1,17 @@
+{
+	"OBJECT": "Object",
+	"WHEN_THE_PROCESS_STARTS": "When the process starts",
+	"WHEN_A_RECORD_IS_CREATED_OR_EDITED": "When a record is created or edited",
+	"ONLY_WHEN_A_RECORD_IS_CREATED": "Only when a record is created",
+	"ACTION_GROUP": "Action Group",
+	"CONDITION_NAME": "Condition Name",
+	"CRITERIA_FOR_EXECUTING_ACTIONS": "Criteria for Execution Actions",
+	"CONDITIONS_ARE_MET": "Conditions are met",
+	"FORMULA_EVALUATES_TO_TRUE": "Formula evaluates to true",
+	"NO_CRITERIA": "No criteria - just execute the actions!",
+	"CONDITIONS": "Conditions",
+	"FIELD": "Field",
+	"OPERATOR": "Operator",
+	"TYPE": "Type",
+	"VALUE": "Value"
+}

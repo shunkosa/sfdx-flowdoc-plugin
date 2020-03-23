@@ -1,0 +1,20 @@
+{
+    "h1": {
+        "fontSize": 24,
+        "bold": true
+    },
+
+    "h2": {
+        "fontSize": 18,
+        "bold": true
+    },
+
+    "h3": {
+        "fontSize": 14,
+        "bold": true
+    },
+    
+    "bold": {
+        "bold": true
+    }
+}
