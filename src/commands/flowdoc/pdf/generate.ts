@@ -1,10 +1,11 @@
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
 import { AnyJson } from '@salesforce/ts-types';
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import FlowParser from '../../../lib/flowParser';
 import Renderer from '../../../lib/renderer';
-import fonts from '../../../style/font';
+import fonts from '../../../style/font'
 
 const Pdf = require('pdfmake');
 const xml2js = require('xml2js');
@@ -54,7 +55,8 @@ export default class Generate extends SfdxCommand {
       throw new SfdxError(messages.getMessage('errorInvalidProjectPath'));
     }
     const sourcePath = (this.flags.name) ? `${projectPath}/${packagePathObj.path}/${FLOW_PATH}/${this.flags.name}.flow-meta.xml` : this.args.file
-    const targetPath = `${this.flags.name}.pdf`;
+    const name = (this.flags.name) ? (this.flags.name) : path.basename(this.args.file).split('.')[0];
+    const targetPath = `${name}.pdf`;
 
     const data = fs.readFileSync(sourcePath);
     const result = await xmlParser.parseStringPromise(data);
@@ -63,17 +65,17 @@ export default class Generate extends SfdxCommand {
     if(!fp.isSupportedFlow) {
       throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
     }
-    const r = new Renderer(fp, this.flags.locale);
+    const r = new Renderer(fp, this.flags.locale, name);
 
     const docDefinition = r.createDocDefinition();
 
     const printer = new Pdf(fonts);
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
-    // fs.ensureDirSync(targetPath);
+    
     pdfDoc.pipe(fs.createWriteStream(targetPath));
     pdfDoc.end();
-    const name: string = fp.getLabel(); 
-    this.ux.log(`Documentation of '${name}' flow is successfully generated.`);
+    const label: string = fp.getLabel(); 
+    this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
 
     return result;
   }

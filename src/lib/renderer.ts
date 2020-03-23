@@ -7,9 +7,12 @@ export default class Renderer {
 
     i18n;
 
-    constructor(flowParser, locale: string) {
+    name;
+
+    constructor(flowParser, locale: string, name: string) {
         this.flowParser = flowParser;
         this.i18n = i18n(locale);
+        this.name = name;
     }
 
     createDocDefinition() {
@@ -33,7 +36,7 @@ export default class Renderer {
         */
 
         content.push({ text: this.flowParser.getLabel() , style: 'h1' });
-        content.push({ text: 'Opportunity_Process' }); // TODO: Developer Name
+        content.push({ text: this.name });
         
         // The process starts when
         content.push({ text: 'The process starts when', margin: [0, 10, 0, 5] });
