@@ -1,0 +1,467 @@
+{
+    "$": { "xmlns": "http://soap.sforce.com/2006/04/metadata" },
+    "actionCalls": [
+        {
+            "processMetadataValues": { "name": "emailAlertSelection", "value": { "stringValue": "Email_to_Financial_Group" } },
+            "name": "myRule_1_A1",
+            "label": "Email to Financial Group",
+            "locationX": "100",
+            "locationY": "200",
+            "actionName": "Opportunity.Email_to_Financial_Group",
+            "actionType": "emailAlert",
+            "connector": { "targetReference": "myRule_1_A2" },
+            "inputParameters": { "name": "SObjectRowId", "value": { "elementReference": "myVariable_current.Id" } }
+        },
+        {
+            "processMetadataValues": [
+                { "name": "selectionType", "value": { "stringValue": "firstFound" } },
+                { "name": "submitterType", "value": { "stringValue": "currentUser" } }
+            ],
+            "name": "myRule_4_A1",
+            "label": "Approval",
+            "locationX": "400",
+            "locationY": "200",
+            "actionName": "submit",
+            "actionType": "submit",
+            "connector": { "targetReference": "myDecision5" },
+            "inputParameters": [{ "name": "objectId", "value": { "elementReference": "myVariable_current.Id" } }, { "name": "comment" }]
+        },
+        {
+            "processMetadataValues": { "name": "emailAlertSelection", "value": { "stringValue": "Email_to_Financial_Group" } },
+            "name": "myRule_6_A2",
+            "label": "Email to Financial Group Again",
+            "locationX": "600",
+            "locationY": "300",
+            "actionName": "Opportunity.Email_to_Financial_Group",
+            "actionType": "emailAlert",
+            "inputParameters": { "name": "SObjectRowId", "value": { "elementReference": "myVariable_current.Id" } }
+        }
+    ],
+    "assignments": [
+        {
+            "name": "myWaitAssignment_myWait_myRule_1",
+            "label": "myWaitAssignment_myWait_myRule_1",
+            "locationX": "0",
+            "locationY": "0",
+            "assignmentItems": { "assignToReference": "cancelWaits", "operator": "Add", "value": { "stringValue": "myWait_myRule_1" } },
+            "connector": { "targetReference": "myDecision" }
+        },
+        {
+            "name": "myWaitEvent_myWait_myRule_1_event_0_postWaitExecutionAssignment",
+            "label": "myWaitEvent_myWait_myRule_1_event_0_postWaitExecutionAssignment",
+            "locationX": "0",
+            "locationY": "0",
+            "assignmentItems": {
+                "assignToReference": "myWaitEvent_myWait_myRule_1_event_0_postActionExecutionVariable",
+                "operator": "Assign",
+                "value": { "booleanValue": "true" }
+            },
+            "connector": { "targetReference": "myWait_myRule_1" }
+        }
+    ],
+    "decisions": [
+        {
+            "processMetadataValues": { "name": "index", "value": { "numberValue": "0.0" } },
+            "name": "myDecision",
+            "label": "myDecision",
+            "locationX": "50",
+            "locationY": "0",
+            "defaultConnector": { "targetReference": "myDecision3" },
+            "defaultConnectorLabel": "default",
+            "rules": {
+                "name": "myRule_1",
+                "conditionLogic": "and",
+                "conditions": {
+                    "processMetadataValues": [
+                        { "name": "inputDataType", "value": { "stringValue": "Picklist" } },
+                        { "name": "leftHandSideType", "value": { "stringValue": "Picklist" } },
+                        { "name": "operatorDataType", "value": { "stringValue": "String" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Picklist" } }
+                    ],
+                    "leftValueReference": "myVariable_current.StageName",
+                    "operator": "EqualTo",
+                    "rightValue": { "stringValue": "Prospecting" }
+                },
+                "connector": { "targetReference": "myRule_1_pmetdec" },
+                "label": "is in Prospect?"
+            }
+        },
+        {
+            "processMetadataValues": { "name": "index", "value": { "numberValue": "1.0" } },
+            "name": "myDecision3",
+            "label": "myDecision3",
+            "locationX": "50",
+            "locationY": "0",
+            "defaultConnector": { "targetReference": "myDecision5" },
+            "defaultConnectorLabel": "default",
+            "rules": {
+                "name": "myRule_4",
+                "conditionLogic": "and",
+                "conditions": {
+                    "processMetadataValues": [
+                        { "name": "inputDataType", "value": { "stringValue": "Picklist" } },
+                        { "name": "leftHandSideType", "value": { "stringValue": "Picklist" } },
+                        { "name": "operatorDataType", "value": { "stringValue": "String" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Picklist" } }
+                    ],
+                    "leftValueReference": "myVariable_current.StageName",
+                    "operator": "EqualTo",
+                    "rightValue": { "stringValue": "Negotiation/Review" }
+                },
+                "connector": { "targetReference": "myRule_4_A1" },
+                "label": "is in Negotiation?"
+            }
+        },
+        {
+            "processMetadataValues": { "name": "index", "value": { "numberValue": "2.0" } },
+            "name": "myDecision5",
+            "label": "myDecision5",
+            "locationX": "50",
+            "locationY": "0",
+            "defaultConnector": { "targetReference": "myDecision8" },
+            "defaultConnectorLabel": "default",
+            "rules": {
+                "name": "myRule_6",
+                "conditionLogic": "and",
+                "conditions": { "leftValueReference": "formula_myRule_6", "operator": "EqualTo", "rightValue": { "booleanValue": "true" } },
+                "connector": { "targetReference": "myRule_6_A1" },
+                "label": "closed Won?"
+            }
+        },
+        {
+            "processMetadataValues": { "name": "index", "value": { "numberValue": "3.0" } },
+            "name": "myDecision8",
+            "label": "myDecision8",
+            "locationX": "50",
+            "locationY": "0",
+            "defaultConnectorLabel": "default",
+            "rules": {
+                "name": "myRule_9",
+                "conditionLogic": "and",
+                "conditions": { "leftValueReference": "formula_myRule_9", "operator": "EqualTo", "rightValue": { "booleanValue": "true" } },
+                "label": "All OK"
+            }
+        },
+        {
+            "name": "myPostWaitDecision_myWaitEvent_myWait_myRule_1_event_0",
+            "label": "myPostWaitDecision_myWaitEvent_myWait_myRule_1_event_0",
+            "locationX": "0",
+            "locationY": "0",
+            "defaultConnector": { "targetReference": "myWaitEvent_myWait_myRule_1_event_0_postWaitExecutionAssignment" },
+            "defaultConnectorLabel": "default",
+            "rules": {
+                "name": "myPostWaitRule_myWaitEvent_myWait_myRule_1_event_0",
+                "conditionLogic": "and",
+                "conditions": {
+                    "leftValueReference": "myVariable_current.CloseDate",
+                    "operator": "IsNull",
+                    "rightValue": { "booleanValue": "false" }
+                },
+                "connector": { "targetReference": "myWaitEvent_myWait_myRule_1_event_0_SA1" },
+                "label": "myPostWaitRule_myWaitEvent_myWait_myRule_1_event_0"
+            }
+        },
+        {
+            "name": "myPreWaitDecision_myWait_myRule_1",
+            "label": "myPreWaitDecision_myWait_myRule_1",
+            "locationX": "0",
+            "locationY": "0",
+            "defaultConnector": { "targetReference": "myWaitAssignment_myWait_myRule_1" },
+            "defaultConnectorLabel": "default",
+            "rules": {
+                "name": "myPreWaitRule_myWait_myRule_1",
+                "conditionLogic": "and",
+                "conditions": {
+                    "processMetadataValues": [
+                        { "name": "inputDataType", "value": { "stringValue": "Picklist" } },
+                        { "name": "leftHandSideType", "value": { "stringValue": "Picklist" } },
+                        { "name": "operatorDataType", "value": { "stringValue": "String" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Picklist" } }
+                    ],
+                    "leftValueReference": "myVariable_current.StageName",
+                    "operator": "EqualTo",
+                    "rightValue": { "stringValue": "Prospecting" }
+                },
+                "connector": { "targetReference": "myDecision" },
+                "label": "myPreWaitRule_myWait_myRule_1"
+            }
+        },
+        {
+            "name": "myRule_1_pmetdec",
+            "label": "Previously Met Decision",
+            "locationX": "100",
+            "locationY": "100",
+            "defaultConnector": { "targetReference": "myRule_1_A1" },
+            "defaultConnectorLabel": "Not Previously Met",
+            "rules": [
+                {
+                    "name": "myRule_1_pmetnullrule",
+                    "conditionLogic": "or",
+                    "conditions": { "leftValueReference": "myVariable_old", "operator": "IsNull", "rightValue": { "booleanValue": "true" } },
+                    "connector": { "targetReference": "myRule_1_A1" },
+                    "label": "Previously Met - Null"
+                },
+                {
+                    "name": "myRule_1_pmetrule",
+                    "conditionLogic": "and",
+                    "conditions": {
+                        "processMetadataValues": [
+                            { "name": "inputDataType", "value": { "stringValue": "Picklist" } },
+                            { "name": "leftHandSideType", "value": { "stringValue": "Picklist" } },
+                            { "name": "operatorDataType", "value": { "stringValue": "String" } },
+                            { "name": "rightHandSideType", "value": { "stringValue": "Picklist" } }
+                        ],
+                        "leftValueReference": "myVariable_old.StageName",
+                        "operator": "EqualTo",
+                        "rightValue": { "stringValue": "Prospecting" }
+                    },
+                    "label": "Previously Met - Prev"
+                }
+            ]
+        }
+    ],
+    "description": "Yes we can",
+    "formulas": [
+        {
+            "processMetadataValues": { "name": "originalFormula", "value": { "stringValue": "TODAY() + 7" } },
+            "name": "formula_2_myRule_1_A2_9135154953",
+            "dataType": "Date",
+            "expression": "TODAY() + 7"
+        },
+        {
+            "processMetadataValues": { "name": "originalFormula", "value": { "stringValue": "180 + [Opportunity].CloseDate " } },
+            "name": "formula_7_myRule_6_A1_6831756980",
+            "dataType": "Date",
+            "expression": "180 + {!myVariable_current.CloseDate}"
+        },
+        {
+            "processMetadataValues": {
+                "name": "originalFormula",
+                "value": { "stringValue": "[Opportunity].IsClosed && ISPICKVAL([Opportunity].StageName, 'Closed Won')" }
+            },
+            "name": "formula_myRule_6",
+            "dataType": "Boolean",
+            "expression": "{!myVariable_current.IsClosed} && ISPICKVAL({!myVariable_current.StageName}, 'Closed Won')"
+        },
+        { "name": "formula_myRule_9", "dataType": "Boolean", "expression": "true" }
+    ],
+    "interviewLabel": "Hello_Process-1_InterviewLabel",
+    "label": "Hello Process",
+    "processMetadataValues": [
+        { "name": "ObjectType", "value": { "stringValue": "Opportunity" } },
+        { "name": "ObjectVariable", "value": { "elementReference": "myVariable_current" } },
+        { "name": "OldObjectVariable", "value": { "elementReference": "myVariable_old" } },
+        { "name": "TriggerType", "value": { "stringValue": "onCreateOnly" } }
+    ],
+    "processType": "Workflow",
+    "recordCreates": [
+        {
+            "name": "myRule_1_A2",
+            "label": "Create a Task",
+            "locationX": "100",
+            "locationY": "300",
+            "connector": { "targetReference": "myWait_myRule_1" },
+            "inputAssignments": [
+                {
+                    "processMetadataValues": [
+                        { "name": "dataType", "value": { "stringValue": "Date" } },
+                        { "name": "isRequired", "value": { "booleanValue": "false" } },
+                        { "name": "leftHandSideLabel", "value": { "stringValue": "Due Date Only" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Formula" } }
+                    ],
+                    "field": "ActivityDate",
+                    "value": { "elementReference": "formula_2_myRule_1_A2_9135154953" }
+                },
+                {
+                    "processMetadataValues": [
+                        { "name": "dataType", "value": { "stringValue": "ID" } },
+                        { "name": "isRequired", "value": { "booleanValue": "false" } },
+                        { "name": "leftHandSideLabel", "value": { "stringValue": "Assigned To ID" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Reference" } }
+                    ],
+                    "field": "OwnerId",
+                    "value": { "elementReference": "myVariable_current.Account.OwnerId" }
+                },
+                {
+                    "processMetadataValues": [
+                        { "name": "dataType", "value": { "stringValue": "Picklist" } },
+                        { "name": "isRequired", "value": { "booleanValue": "false" } },
+                        { "name": "leftHandSideLabel", "value": { "stringValue": "Priority" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Picklist" } }
+                    ],
+                    "field": "Priority",
+                    "value": { "stringValue": "High" }
+                },
+                {
+                    "processMetadataValues": [
+                        { "name": "dataType", "value": { "stringValue": "String" } },
+                        { "name": "isRequired", "value": { "booleanValue": "false" } },
+                        { "name": "leftHandSideLabel", "value": { "stringValue": "Subject" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "String" } }
+                    ],
+                    "field": "Subject",
+                    "value": { "stringValue": "Send Marketing Materials" }
+                },
+                {
+                    "processMetadataValues": [
+                        { "name": "dataType", "value": { "stringValue": "ID" } },
+                        { "name": "isRequired", "value": { "booleanValue": "false" } },
+                        { "name": "leftHandSideLabel", "value": { "stringValue": "Related To ID" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Reference" } }
+                    ],
+                    "field": "WhatId",
+                    "value": { "elementReference": "myVariable_current.Id" }
+                }
+            ],
+            "object": "Task"
+        },
+        {
+            "name": "myRule_6_A1",
+            "label": "Create a Robot Setup",
+            "locationX": "600",
+            "locationY": "200",
+            "connector": { "targetReference": "myRule_6_A2" },
+            "inputAssignments": [
+                {
+                    "processMetadataValues": [
+                        { "name": "dataType", "value": { "stringValue": "Date" } },
+                        { "name": "isRequired", "value": { "booleanValue": "false" } },
+                        { "name": "leftHandSideLabel", "value": { "stringValue": "Date" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Formula" } }
+                    ],
+                    "field": "Date__c",
+                    "value": { "elementReference": "formula_7_myRule_6_A1_6831756980" }
+                },
+                {
+                    "processMetadataValues": [
+                        { "name": "dataType", "value": { "stringValue": "ID" } },
+                        { "name": "isRequired", "value": { "booleanValue": "true" } },
+                        { "name": "leftHandSideLabel", "value": { "stringValue": "Opportunity" } },
+                        { "name": "rightHandSideType", "value": { "stringValue": "Reference" } }
+                    ],
+                    "field": "Opportunity__c",
+                    "value": { "elementReference": "myVariable_current.Id" }
+                }
+            ],
+            "object": "Robot_Setup__c"
+        }
+    ],
+    "recordUpdates": {
+        "processMetadataValues": [
+            { "name": "evaluationType", "value": { "stringValue": "criteria" } },
+            { "name": "extraTypeInfo" },
+            { "name": "isChildRelationship", "value": { "booleanValue": "false" } },
+            { "name": "reference", "value": { "stringValue": "[Opportunity]" } },
+            { "name": "referenceTargetField" }
+        ],
+        "name": "myWaitEvent_myWait_myRule_1_event_0_SA1",
+        "label": "Test",
+        "locationX": "100",
+        "locationY": "200",
+        "connector": { "targetReference": "myWaitEvent_myWait_myRule_1_event_0_postWaitExecutionAssignment" },
+        "filters": [
+            {
+                "processMetadataValues": [
+                    { "name": "implicit", "value": { "booleanValue": "false" } },
+                    { "name": "inputDataType", "value": { "stringValue": "Currency" } },
+                    { "name": "leftHandSideLabel", "value": { "stringValue": "Amount" } },
+                    { "name": "leftHandSideReferenceTo", "value": { "stringValue": "" } },
+                    { "name": "leftHandSideType", "value": { "stringValue": "Currency" } },
+                    { "name": "operatorDataType", "value": { "stringValue": "Currency" } },
+                    { "name": "rightHandSideType", "value": { "stringValue": "Currency" } }
+                ],
+                "field": "Amount",
+                "operator": "GreaterThan",
+                "value": { "numberValue": "10000.0" }
+            },
+            {
+                "processMetadataValues": { "name": "implicit", "value": { "booleanValue": "true" } },
+                "field": "Id",
+                "operator": "EqualTo",
+                "value": { "elementReference": "myVariable_current.Id" }
+            },
+            {
+                "processMetadataValues": [
+                    { "name": "implicit", "value": { "booleanValue": "false" } },
+                    { "name": "inputDataType", "value": { "stringValue": "Picklist" } },
+                    { "name": "leftHandSideLabel", "value": { "stringValue": "Lead Source" } },
+                    { "name": "leftHandSideReferenceTo", "value": { "stringValue": "" } },
+                    { "name": "leftHandSideType", "value": { "stringValue": "Picklist" } },
+                    { "name": "operatorDataType", "value": { "stringValue": "String" } },
+                    { "name": "rightHandSideType", "value": { "stringValue": "Picklist" } }
+                ],
+                "field": "LeadSource",
+                "operator": "EqualTo",
+                "value": { "stringValue": "Phone Inquiry" }
+            }
+        ],
+        "inputAssignments": {
+            "processMetadataValues": [
+                { "name": "dataType", "value": { "stringValue": "Picklist" } },
+                { "name": "isRequired", "value": { "booleanValue": "false" } },
+                { "name": "leftHandSideLabel", "value": { "stringValue": "Stage" } },
+                { "name": "leftHandSideReferenceTo", "value": { "stringValue": "" } },
+                { "name": "rightHandSideType", "value": { "stringValue": "Picklist" } }
+            ],
+            "field": "StageName",
+            "value": { "stringValue": "Perception Analysis" }
+        },
+        "object": "Opportunity"
+    },
+    "startElementReference": "myPreWaitDecision_myWait_myRule_1",
+    "status": "Draft",
+    "variables": [
+        { "name": "cancelWaits", "dataType": "String", "isCollection": "true", "isInput": "false", "isOutput": "true" },
+        {
+            "name": "myVariable_current",
+            "dataType": "SObject",
+            "isCollection": "false",
+            "isInput": "true",
+            "isOutput": "true",
+            "objectType": "Opportunity"
+        },
+        {
+            "name": "myVariable_old",
+            "dataType": "SObject",
+            "isCollection": "false",
+            "isInput": "true",
+            "isOutput": "false",
+            "objectType": "Opportunity"
+        },
+        {
+            "name": "myWaitEvent_myWait_myRule_1_event_0_postActionExecutionVariable",
+            "dataType": "Boolean",
+            "isCollection": "false",
+            "isInput": "false",
+            "isOutput": "false",
+            "value": { "booleanValue": "false" }
+        }
+    ],
+    "waits": {
+        "name": "myWait_myRule_1",
+        "label": "myWait_myRule_1",
+        "locationX": "0",
+        "locationY": "0",
+        "defaultConnectorLabel": "defaultLabel",
+        "waitEvents": {
+            "processMetadataValues": { "name": "inputParameterType", "value": { "stringValue": "referenced" } },
+            "name": "myWaitEvent_myWait_myRule_1_event_0",
+            "conditionLogic": "and",
+            "conditions": {
+                "leftValueReference": "myWaitEvent_myWait_myRule_1_event_0_postActionExecutionVariable",
+                "operator": "EqualTo",
+                "rightValue": { "booleanValue": "false" }
+            },
+            "connector": { "targetReference": "myPostWaitDecision_myWaitEvent_myWait_myRule_1_event_0" },
+            "eventType": "DateRefAlarmEvent",
+            "inputParameters": [
+                { "name": "TimeTableColumnEnumOrId", "value": { "stringValue": "Opportunity" } },
+                { "name": "EntityObjectId", "value": { "elementReference": "myVariable_current.Id" } },
+                { "name": "TimeOffsetUnit", "value": { "stringValue": "Days" } },
+                { "name": "TimeOffset", "value": { "numberValue": "1.0" } },
+                { "name": "TimeFieldColumnEnumOrId", "value": { "stringValue": "CloseDate" } }
+            ],
+            "label": "myWaitEvent_myWait_myRule_1_event_0"
+        }
+    }
+}
