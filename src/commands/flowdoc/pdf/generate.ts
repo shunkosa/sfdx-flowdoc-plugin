@@ -9,7 +9,6 @@ import fonts from '../../../style/font';
 const Pdf = require('pdfmake');
 const xml2js = require('xml2js');
 
-
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages')
 const FLOW_PATH = 'main/default/flows';
@@ -60,6 +59,9 @@ export default class Generate extends SfdxCommand {
     const result = await xmlParser.parseStringPromise(data);
 
     const fp = new FlowParser(result.Flow); 
+    if(!fp.isSupportedFlow) {
+      throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
+    }
     const r = new Renderer(fp);
 
     const docDefinition = r.createDocDefinition();
@@ -69,7 +71,8 @@ export default class Generate extends SfdxCommand {
     // fs.ensureDirSync(targetPath);
     pdfDoc.pipe(fs.createWriteStream(targetPath));
     pdfDoc.end();
-    this.ux.log('Created!')
+    const name: string = fp.getLabel(); 
+    this.ux.log(`Documentation of '${name}' flow is successfully generated.`);
 
     return result;
   }
