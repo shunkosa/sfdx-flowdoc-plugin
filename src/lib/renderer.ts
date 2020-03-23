@@ -39,7 +39,7 @@ export default class Renderer {
         content.push({ text: this.name });
         
         // The process starts when
-        content.push({ text: 'The process starts when', margin: [0, 10, 0, 5] });
+        content.push({ text: this.i18n.__('THE_PROCESS_STARTS_WHEN'), margin: [0, 10, 0, 5] });
         
         // Object and Trigger type
         const object = this.flowParser.getObjectType();
@@ -51,8 +51,8 @@ export default class Renderer {
             table: {
               widths: [ 200, 'auto' ],
               body: [
-                [ this.th('Object'), object ],
-                [ this.th('When the process starts'), triggerType ],
+                [ this.th(this.i18n.__('OBJECT')), object ],
+                [ this.th(this.i18n.__('WHEN_THE_PROCESS_STARTS')), triggerType ],
               ]
             }
           }
@@ -98,9 +98,9 @@ export default class Renderer {
         if (criteria === 'FORMULA_EVALUATES_TO_TRUE') {
             const formulaName = decision.rules.conditions.leftValueReference;
             const formulaExpression = this.flowParser.getFormulaExpression(formulaName);
-            table.table.body.push([ 'Formula', unescape(formulaExpression)]);
+            table.table.body.push([ this.i18n.__('FORMULA'), unescape(formulaExpression)]);
         } else if (criteria === 'CONDITIONS_ARE_MET') {
-            table.table.body.push([ 'Condition Logic', decision.rules.conditionLogic.toUpperCase() ])
+            table.table.body.push([ this.i18n.__('CONDITION_LOGIC'), decision.rules.conditionLogic.toUpperCase() ])
         }
         return table;
     }
@@ -131,8 +131,8 @@ export default class Renderer {
             layout: 'lightHorizontalLines', 
             table: {
                 body:  [
-                    ['Action Type', action.actionType ],
-                    ['Action Name', this.i18n.__(`ACTION_TYPE_${action.label}`)]
+                    ['Action Type', this.i18n.__(`ACTION_TYPE_${action.actionType}`) ],
+                    ['Action Name', action.label ]
                 ],
             },
         }
