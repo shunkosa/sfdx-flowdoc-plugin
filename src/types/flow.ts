@@ -7,7 +7,9 @@ export interface Flow {
     processMetadataValues: ProcessMetadataValue[],
     formulas: any,
     decisions: any,
-    actionCalls: any
+    actionCalls: any,
+    recordUpdates: any,
+    recordCreates: any
 }
 
 interface Variable {

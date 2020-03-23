@@ -3,10 +3,10 @@ import { Flow } from '../types/flow';
 export default class FlowParser {
     
     constructor(private flow: Flow) {
-        this.flow = flow;
-        if(this.flow.processType !== 'Workflow') {
-            throw new Error('Only object process is supported.');
-        }
+    }
+
+    isSupportedFlow() {
+        return ['Workflow'].includes(this.flow.processType);
     }
 
     getLabel() {
@@ -49,20 +49,29 @@ export default class FlowParser {
         return 'CONDITIONS_ARE_MET';
     }
     
+    getDecisionActions(actions, nextActionName) {
+        const nextAction = this.getAction(nextActionName);
+        if (nextAction) {
+            actions.push(nextAction);
+            if (nextAction.connector) {
+                this.getDecisionActions(actions, nextAction.connector.targetReference);
+            }
+        }
+        return actions;
+    }
+
     getAction(name) {
         const actions = Array.isArray(this.flow.actionCalls) ? this.flow.actionCalls : [this.flow.actionCalls];
-        return actions.find(a => a.name === name);
-    }
+        
+        const rawRecordUpdates = Array.isArray(this.flow.recordUpdates) ? this.flow.recordUpdates : [this.flow.recordUpdates];
+        const recordUpdates = rawRecordUpdates.map(a => ({...a, actionType: 'RECORD_UPDATE'}));
+        
+        const rawRecordCreates = Array.isArray(this.flow.recordCreates) ? this.flow.recordCreates : [this.flow.recordCreates];
+        const recordCreates = rawRecordCreates.map(a => ({...a, actionType: 'RECORD_CREATE'}));
 
-    /*
-    getRecordUpdate(name) {
-        return '';
+        const processActions =[...actions, ...recordUpdates, ...recordCreates];
+        return processActions.find(a => a.name === name);
     }
-
-    getRecordCreate(name) {
-        return '';
-    }
-    */
 
     hasAlwaysTrueFormula(name) {
         const formulas = Array.isArray(this.flow.formulas) ? this.flow.formulas : [this.flow.formulas];

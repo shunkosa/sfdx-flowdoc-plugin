@@ -1,4 +1,3 @@
-import * as path from 'path';
 import i18n from '../config/i18n';
 
 const styles = require('../style/style.json');
@@ -26,10 +25,12 @@ export default class Renderer {
     createContent() {
         const content = [];
         // Title
+        /*
         content.push({
             image: path.join(__dirname, '../assets/img/process_120.png'),
             fit: [30, 30]
         });
+        */
 
         content.push({ text: this.flowParser.getLabel() , style: 'h1' });
         content.push({ text: 'Opportunity_Process' }); // TODO: Developer Name
@@ -67,13 +68,13 @@ export default class Renderer {
             
             if(decisions[i].rules.connector) {
             const nextActionName = decisions[i].rules.connector.targetReference;
-            const nextAction = this.flowParser.getAction(nextActionName);
-            console.log(nextActionName);
-            console.log(nextAction);
-                if (nextAction) {
-                    content.push(this.h3('Actions'));
-                    content.push(this.renderAction(nextAction));
-                }
+            const actions = this.flowParser.getDecisionActions([], nextActionName);
+            if (actions.length > 0) {
+                content.push(this.h3('Actions'));
+            }
+            for (const action of actions) {
+                content.push(this.renderAction(action));
+            }
             }
         }
 
@@ -131,7 +132,6 @@ export default class Renderer {
                     ['Action Name', action.label]
                 ],
             },
-            // margin: [15, 5, 0, 0]
         }
         return actionTable;
     }
@@ -145,6 +145,6 @@ export default class Renderer {
     }
 
     h3 = (text) => {
-        return { text, style: 'h3', margin: [15, 10]}
+        return { text, style: 'h3', margin: [0, 10]}
     }
 }
