@@ -1,5 +1,5 @@
 # Flowdoc
-https://github.com/shunkosa/sfdx-flowdoc-plugin.gi
+A Salesforce CLI plugin that generates design document from Lightning flow metadata
 
 [![Github Workflow](https://github.com/shunkosa/sfdx-flowdoc-plugin/workflows/unit%20test/badge.svg?branch=master)](https://github.com/shunkosa/sfdx-flowdoc-plugin/actions?query=workflow%3A%22unit%20test%22)
 <!--
