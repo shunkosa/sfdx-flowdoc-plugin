@@ -1,0 +1,32 @@
+name: unit test
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            # Checkout the code in the pull request
+            - name: 'Checkout source code'
+              uses: actions/checkout@v2
+
+            # Install npm dependencies
+            - name: 'Install npm dependencies'
+              run: npm install
+
+            # Lint
+            - name: 'Eslint'
+              run: npm run validate
+
+            # Unit Test
+            - name: 'Unit Test'
+              run: npm run test
+
+            # Upload code coverage data
+            #- name: 'Upload code coverage for LWC to Codecov.io'
+            #  uses: codecov/codecov-action@v1
+            #  with:
+            #      token: ${{ secrets.CODECOV_TOKEN }}
