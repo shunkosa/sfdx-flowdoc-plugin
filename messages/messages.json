@@ -1,7 +1,8 @@
 {
   "errorParamNotFound": "--name or argument is required.",
-  "commandDescription": "print a greeting and your org IDs",
+  "errorUnsupportedFlow": "Currently, only process is supported. the other type of processes will be available soon.",
+  "commandDescription": "generate pdf document",
   "nameFlagDescription": "developer name of flow",
   "outdirFlagDescription": "output directory",
-  "errorNoOrgResults": "No results found for the org '%s'."
+  "errorInvalidProjectPath": "path in sfdx-project.json is invalid,"
 }
