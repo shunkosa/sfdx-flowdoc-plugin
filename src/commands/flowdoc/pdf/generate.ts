@@ -32,6 +32,7 @@ export default class Generate extends SfdxCommand {
   protected static flagsConfig = {
     // flag with a value (-n, --name=VALUE)
     name: flags.string({char: 'n', description: messages.getMessage('nameFlagDescription')}),
+    locale: flags.string({char: 'l', description: messages.getMessage('localeFlagDescription')}),
     outdir: flags.string({char: 'o', description: messages.getMessage('outdirFlagDescription')})
   };
 
@@ -62,7 +63,7 @@ export default class Generate extends SfdxCommand {
     if(!fp.isSupportedFlow) {
       throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
     }
-    const r = new Renderer(fp);
+    const r = new Renderer(fp, this.flags.locale);
 
     const docDefinition = r.createDocDefinition();
 

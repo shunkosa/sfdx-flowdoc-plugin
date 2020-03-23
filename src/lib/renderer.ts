@@ -7,9 +7,9 @@ export default class Renderer {
 
     i18n;
 
-    constructor(flowParser) {
+    constructor(flowParser, locale: string) {
         this.flowParser = flowParser;
-        this.i18n = i18n();
+        this.i18n = i18n(locale);
     }
 
     createDocDefinition() {
@@ -129,7 +129,7 @@ export default class Renderer {
             table: {
                 body:  [
                     ['Action Type', action.actionType ],
-                    ['Action Name', action.label]
+                    ['Action Name', this.i18n.__(`ACTION_TYPE_${action.label}`)]
                 ],
             },
         }
