@@ -17,7 +17,7 @@
 	"OPERATOR": "Operator",
 	"TYPE": "Type",
 	"VALUE": "Value",
-	"ACTIONS": "Actions",
+	"HEADER_ACTIONS": "Actions",
 	"ACTION_TYPE": "Action Type",
 	"ACTION_NAME": "Action Name",
 	"ACTION_TYPE_activateSessionPermSet": "",
@@ -54,5 +54,11 @@
 	"ACTION_TYPE_submitKnowledgeArticleForTranslation": "",
 	"ACTION_TYPE_submit": "Submit for Approval",
 	"ACTION_TYPE_RECORD_CREATE" : "Create a Record",
-	"ACTION_TYPE_RECORD_UPDATE" : "Update Records"
+	"ACTION_TYPE_RECORD_UPDATE" : "Update Records",
+	"DAYS": "Days",
+	"HOURS": "Hours",
+	"BEFORE": "Before",
+	"AFTER": "After",
+	"NOW": "Now",
+	"HEADER_SCHEDULED_ACTIONS": "Scheduled Actions"
 }

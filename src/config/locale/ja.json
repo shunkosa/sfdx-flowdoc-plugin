@@ -17,7 +17,7 @@
 	"OPERATOR": "演算子",
 	"TYPE": "種別",
 	"VALUE": "値",
-	"ACTIONS": "アクション",
+	"HEADER_ACTIONS": "アクション",
 	"ACTION_TYPE": "アクション種別",
 	"ACTION_NAME": "アクション名",
 	"ACTION_TYPE_activateSessionPermSet": "",
@@ -54,5 +54,11 @@
 	"ACTION_TYPE_submitKnowledgeArticleForTranslation": "",
 	"ACTION_TYPE_submit": "承認申請",
 	"ACTION_TYPE_RECORD_CREATE" : "レコードを作成",
-	"ACTION_TYPE_RECORD_UPDATE" : "レコードを更新"
+	"ACTION_TYPE_RECORD_UPDATE" : "レコードを更新",
+	"DAYS": "日",
+	"HOURS": "時間",
+	"BEFORE": "前",
+	"AFTER": "後",
+	"NOW": "現在",
+	"HEADER_SCHEDULED_ACTIONS": "スケジュール済みアクション"
 }
