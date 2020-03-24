@@ -1,0 +1,5 @@
+# 0.0.1 - March 24, 2020
+* Support scheduled action in process
+
+# 0.0.0 - March 23, 2020
+* Initial release
