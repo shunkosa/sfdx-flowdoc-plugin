@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import FlowParser from '../../../lib/flowParser';
 import Renderer from '../../../lib/renderer';
-import fonts from '../../../style/font'
+import fonts from '../../../style/font';
 
 const Pdf = require('pdfmake');
 const xml2js = require('xml2js');
@@ -42,7 +42,7 @@ export default class Generate extends SfdxCommand {
   protected static requiresProject = true;
 
   public async run(): Promise<AnyJson> {
-    if(!this.flags.name && !this.args.file) {
+    if (!this.flags.name && !this.args.file) {
       throw new SfdxError(messages.getMessage('errorParamNotFound'));
     }
 
@@ -51,7 +51,7 @@ export default class Generate extends SfdxCommand {
     const projectJson = await project.resolveProjectConfig();
 
     const packagePathObj = (projectJson.packageDirectories as any).find(pd => pd.default);
-    if(!packagePathObj) {
+    if (!packagePathObj) {
       throw new SfdxError(messages.getMessage('errorInvalidProjectPath'));
     }
     const sourcePath = (this.flags.name) ? `${projectPath}/${packagePathObj.path}/${FLOW_PATH}/${this.flags.name}.flow-meta.xml` : this.args.file
@@ -62,7 +62,7 @@ export default class Generate extends SfdxCommand {
     const result = await xmlParser.parseStringPromise(data);
 
     const fp = new FlowParser(result.Flow); 
-    if(!fp.isSupportedFlow) {
+    if (!fp.isSupportedFlow) {
       throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
     }
     const r = new Renderer(fp, this.flags.locale, name);
