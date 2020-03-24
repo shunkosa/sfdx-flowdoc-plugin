@@ -34,6 +34,7 @@
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-prettier": "^3.1.2",
     "jest": "^24.3.1",
+    "rimraf": "^3.0.2",
     "ts-jest": "^24.0.0",
     "ts-node": "^8",
     "typescript": "^3.8.3"
@@ -69,8 +70,10 @@
   },
   "repository": "shunkosa/sfdx-fclowdoc-plugin",
   "scripts": {
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "build": "tsc -b",
+    "clearn": "rimraf .oclif.manifest.json",
+    "prepare": "npm run build && oclif-dev manifest",
+    "postpublish": "npm run clean; git push; git push --tags",
     "test": "jest --coverage",
     "validate": "eslint src/**/*.ts",
     "version": "oclif-dev readme && git add README.md"
