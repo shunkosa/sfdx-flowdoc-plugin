@@ -16,6 +16,7 @@
         ],
         "no-use-before-define": "off",
         "no-underscore-dangle": "off",
+        "no-continue": "off",
         "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
         "import/prefer-default-export": "warn",
         "import/no-extraneous-dependencies": "off",
