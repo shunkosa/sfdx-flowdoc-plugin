@@ -9,7 +9,8 @@ export interface Flow {
     decisions: any,
     actionCalls: any,
     recordUpdates: any,
-    recordCreates: any
+    recordCreates: any,
+    waits: any,
 }
 
 interface Variable {
@@ -21,4 +22,16 @@ interface ProcessMetadataValue {
     value: {
         stringValue: string
     }
+}
+
+export interface ScheduledActionSection {
+    wait: WaitEventSummary,
+    actions: any
+}
+
+export interface WaitEventSummary {
+    offset: number;
+    unit: string;
+    isAfter: boolean;
+    field?: string;
 }
