@@ -1,3 +1,7 @@
+# 0.0.3 - March 25, 2020
+## Fix
+* Include style file
+
 # 0.0.2 - March 25, 2020
 ## Fix
 * Include fonts
