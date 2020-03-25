@@ -1,3 +1,7 @@
+# 0.0.5 - March 25, 2020
+## Fix
+* Fixed error when there's no action
+
 # 0.0.4 - March 25, 2020
 ## Fix
 * Include translated labels
