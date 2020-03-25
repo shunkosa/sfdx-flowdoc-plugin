@@ -70,7 +70,7 @@
   },
   "repository": "shunkosa/sfdx-fclowdoc-plugin",
   "scripts": {
-    "build": "rimraf lib && tsc -b && cp -r src/assets lib/assets && cp src/style/style.json lib/style/style.json",
+    "build": "rimraf lib && tsc -b && cp -r src/assets lib/assets && cp src/style/style.json lib/style/style.json && cp -r src/config/locale lib/config/locale",
     "clean": "rimraf oclif.manifest.json",
     "prepare": "npm run build && oclif-dev manifest",
     "postpublish": "npm run clean; git push; git push --tags",
