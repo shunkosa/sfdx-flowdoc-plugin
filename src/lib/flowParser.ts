@@ -22,11 +22,11 @@ export default class FlowParser {
 
         const actions = this.toArray(this.flow.actionCalls);
         const rawRecordUpdates = this.toArray(this.flow.recordUpdates);
-        const recordUpdates = rawRecordUpdates.map(a => ({...a, actionType: 'RECORD_UPDATE'}));
+        const recordUpdates = rawRecordUpdates.length !== 0 ? rawRecordUpdates.map(a => ({...a, actionType: 'RECORD_UPDATE'})) : [];
         const rawRecordCreates = this.toArray(this.flow.recordCreates);
-        const recordCreates = rawRecordCreates.map(a => ({...a, actionType: 'RECORD_CREATE'}))
-        this.processActions =[...actions, ...recordUpdates, ...recordCreates];
-
+        const recordCreates = rawRecordCreates.length !== 0 ? rawRecordCreates.map(a => ({...a, actionType: 'RECORD_CREATE'})) : [];
+        this.processActions = [...actions, ...recordUpdates, ...recordCreates];
+        
         this.formulas = this.toArray(this.flow.formulas);
 
         this.waits = this.toArray(this.flow.waits);
@@ -83,7 +83,9 @@ export default class FlowParser {
             if(pmDecision) {
                 const rules = this.toArray(pmDecision.rules);
                 const connectedRule = rules.find(r => r.connector !== undefined);
-                this.getActionSequence(actions, connectedRule.connector.targetReference);
+                if (connectedRule) {
+                    this.getActionSequence(actions, connectedRule.connector.targetReference);
+                }
             }
         }
         return actions;
@@ -152,6 +154,9 @@ export default class FlowParser {
     }
 
     toArray = (elements) => {
-        return Array.isArray(elements) ? elements : [elements];
+        if (elements) {
+            return Array.isArray(elements) ? elements : [elements];
+        }
+        return [];
     }
 }
