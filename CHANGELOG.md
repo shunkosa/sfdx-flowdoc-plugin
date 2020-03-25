@@ -1,3 +1,7 @@
+# 0.0.4 - March 25, 2020
+## Fix
+* Include translated labels
+
 # 0.0.3 - March 25, 2020
 ## Fix
 * Include style file
