@@ -1,3 +1,7 @@
+# 0.0.2 - March 25, 2020
+## Fix
+* Include fonts
+
 # 0.0.1 - March 24, 2020
 * Support scheduled action in process
 
