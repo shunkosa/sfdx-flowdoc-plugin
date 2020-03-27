@@ -1,29 +1,25 @@
 import { flags, SfdxCommand } from '@salesforce/command';
-import { Messages, SfdxError, SfdxProject } from '@salesforce/core';
-import { AnyJson } from '@salesforce/ts-types';
-import * as path from 'path';
+import { Messages, SfdxError } from '@salesforce/core';
 import * as fs from 'fs-extra';
+import { Flow } from '../../../types/flow';
 import FlowParser from '../../../lib/flowParser';
 import Renderer from '../../../lib/renderer';
 import fonts from '../../../style/font';
 
 const Pdf = require('pdfmake');
-const xml2js = require('xml2js');
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages')
-const FLOW_PATH = 'main/default/flows';
-const xmlParser = new xml2js.Parser({ explicitArray : false });
 
 export default class Generate extends SfdxCommand {
 
   public static description = messages.getMessage('commandDescription');
 
   public static examples = [
-  `$ sfdx flowdoc:pdf:generate force-app/main/default/flow/Example.flow-meta.xml
+  `$ sfdx flowdoc:pdf:generate Example
   Documentation of 'Example' flow is successfully generated.
   `,
-  `$ sfdx flowdoc:pdf:generate --name Example
+  `$ sfdx flowdoc:pdf:generate Example -l ja
   Documentation of 'Example' flow is successfully generated.
   `
   ];
@@ -31,8 +27,6 @@ export default class Generate extends SfdxCommand {
   public static args = [{name: 'file'}];
 
   protected static flagsConfig = {
-    // flag with a value (-n, --name=VALUE)
-    name: flags.string({char: 'n', description: messages.getMessage('nameFlagDescription')}),
     locale: flags.string({char: 'l', description: messages.getMessage('localeFlagDescription')}),
     outdir: flags.string({char: 'o', description: messages.getMessage('outdirFlagDescription')})
   };
@@ -41,42 +35,35 @@ export default class Generate extends SfdxCommand {
 
   protected static requiresProject = true;
 
-  public async run(): Promise<AnyJson> {
-    if (!this.flags.name && !this.args.file) {
+  public async run(): Promise<any> {
+    if (!this.args.file) {
       throw new SfdxError(messages.getMessage('errorParamNotFound'));
     }
 
-    const projectPath = await SfdxProject.resolveProjectPath();
-    const project = await SfdxProject.resolve();
-    const projectJson = await project.resolveProjectConfig();
+    const conn = this.org.getConnection();
+    conn.setApiVersion('48.0');
 
-    const packagePathObj = (projectJson.packageDirectories as any).find(pd => pd.default);
-    if (!packagePathObj) {
-      throw new SfdxError(messages.getMessage('errorInvalidProjectPath'));
+    const flow = await conn.metadata.read('Flow', this.args.file);
+    if(Object.keys(flow).length === 0) {
+      throw new SfdxError(messages.getMessage('errorFlowNotFound'));
     }
-    const sourcePath = (this.flags.name) ? `${projectPath}/${packagePathObj.path}/${FLOW_PATH}/${this.flags.name}.flow-meta.xml` : this.args.file
-    const name = (this.flags.name) ? (this.flags.name) : path.basename(this.args.file).split('.')[0];
-    const targetPath = `${name}.pdf`;
-
-    const data = fs.readFileSync(sourcePath);
-    const result = await xmlParser.parseStringPromise(data);
-
-    const fp = new FlowParser(result.Flow); 
+    const fp = new FlowParser(flow as unknown as Flow); 
     if (!fp.isSupportedFlow) {
       throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
     }
-    const r = new Renderer(fp, this.flags.locale, name);
+    const r = new Renderer(fp, this.flags.locale, this.args.file);
 
     const docDefinition = r.createDocDefinition();
 
     const printer = new Pdf(fonts);
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
-    
+
+    const targetPath = `${this.args.file}.pdf`;
     pdfDoc.pipe(fs.createWriteStream(targetPath));
     pdfDoc.end();
     const label: string = fp.getLabel(); 
     this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
 
-    return result;
+    return flow;
   }
 }

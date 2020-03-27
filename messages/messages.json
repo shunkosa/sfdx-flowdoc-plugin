@@ -1,9 +1,9 @@
 {
-  "errorParamNotFound": "--name or argument is required.",
+  "errorParamNotFound": "Flow API name is missing.",
   "errorUnsupportedFlow": "Currently, only process is supported. the other type of processes will be available soon.",
   "commandDescription": "generate pdf document",
   "nameFlagDescription": "developer name of flow",
   "localeFlagDescription": "locale of the document (en or ja)",
   "outdirFlagDescription": "output directory",
-  "errorInvalidProjectPath": "path in sfdx-project.json is invalid,"
+  "errorFlowNotFound": "The flow is not found in the org."
 }
