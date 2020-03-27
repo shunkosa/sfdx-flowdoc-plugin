@@ -1,3 +1,7 @@
+# 0.0.6 - March 25, 2020
+## Fix
+* Retrieve flow metadata by API instead of reading local file
+
 # 0.0.5 - March 25, 2020
 ## Fix
 * Fixed error when there's no action
