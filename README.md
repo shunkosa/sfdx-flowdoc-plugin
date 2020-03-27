@@ -7,6 +7,8 @@ A Salesforce CLI plugin that generates design document from Lightning flow metad
 [![Downloads/week](https://img.shields.io/npm/dw/sfdx-flowdoc-plugin.svg)](https://npmjs.org/package/sfdx-flowdoc-plugin)
 [![License](https://img.shields.io/npm/l/sfdx-flowdoc-plugin.svg)](https://github.com/shunkosa/sfdx-flowdoc-plugin/blob/master/package.json)
 
+![](img/screenshot.png)
+
 ## Setup
 ### Install as plugin
 ```
@@ -20,12 +22,14 @@ sfdx plugins:link .
 ```
 
 ## Usage
+Specify an API name of your process
 ```
-sfdx flowdoc:pdf:generate --name Example_Process
+sfdx flowdoc:pdf:generate Example_Process
 ```
 
+Add `-l (--locale) ja ` option to export Japanese document.
 ```
-sfdx flowdoc:pdf:generate hoge/main/default/flows/Example_Process.flow-meta.xml
+sfdx flowdoc:pdf:generate Example_Process -l ja
 ```
 
 ## Feedback
