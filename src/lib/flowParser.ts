@@ -1,11 +1,13 @@
-import { Flow, ScheduledActionSection, WaitEventSummary } from '../types/flow';
+import { Flow, Decision, ScheduledActionSection, WaitEventSummary } from '../types/flow';
+
+const layout = require('./actionLayout.json');
 
 export default class FlowParser {
     private readonly flow: Flow;
 
     private readonly processMetadataValues;
 
-    private readonly decisions;
+    private readonly decisions: Decision[];
 
     private readonly processActions;
 
@@ -15,18 +17,20 @@ export default class FlowParser {
 
     constructor(flow: Flow) {
         this.flow = flow;
-        
+
         this.processMetadataValues = this.toArray(this.flow.processMetadataValues);
-    
+
         this.decisions = this.toArray(this.flow.decisions);
 
         const actions = this.toArray(this.flow.actionCalls);
         const rawRecordUpdates = this.toArray(this.flow.recordUpdates);
-        const recordUpdates = rawRecordUpdates.length !== 0 ? rawRecordUpdates.map(a => ({...a, actionType: 'RECORD_UPDATE'})) : [];
+        const recordUpdates =
+            rawRecordUpdates.length !== 0 ? rawRecordUpdates.map(a => ({ ...a, actionType: 'RECORD_UPDATE' })) : [];
         const rawRecordCreates = this.toArray(this.flow.recordCreates);
-        const recordCreates = rawRecordCreates.length !== 0 ? rawRecordCreates.map(a => ({...a, actionType: 'RECORD_CREATE'})) : [];
+        const recordCreates =
+            rawRecordCreates.length !== 0 ? rawRecordCreates.map(a => ({ ...a, actionType: 'RECORD_CREATE' })) : [];
         this.processActions = [...actions, ...recordUpdates, ...recordCreates];
-        
+
         this.formulas = this.toArray(this.flow.formulas);
 
         this.waits = this.toArray(this.flow.waits);
@@ -43,25 +47,30 @@ export default class FlowParser {
     getObjectType() {
         return this.processMetadataValues.find(p => p.name === 'ObjectType').value.stringValue;
     }
-    
+
     getTriggerType() {
         return this.processMetadataValues.find(p => p.name === 'TriggerType').value.stringValue;
     }
-    
-    getStandardDecisions() {
+
+    getStandardDecisions(): Decision[] {
         return this.decisions
-                .filter(d => d.processMetadataValues !== undefined)
-                .sort((d1, d2) => {
-                    return Number(d1.processMetadataValues.value.numberValue) - Number(d2.processMetadataValues.value.numberValue);
-                });
+            .filter(d => d.processMetadataValues !== undefined)
+            .sort((d1, d2) => {
+                return (
+                    Number(d1.processMetadataValues.value.numberValue) -
+                    Number(d2.processMetadataValues.value.numberValue)
+                );
+            });
     }
-    
+
     getActionExecutionCriteria(decision) {
         if (!Array.isArray(decision.rules.conditions)) {
             const condition = decision.rules.conditions;
-            if (condition.operator === 'EqualTo' 
-                && condition.rightValue.booleanValue
-                && condition.rightValue.booleanValue === 'true') {
+            if (
+                condition.operator === 'EqualTo' &&
+                condition.rightValue.booleanValue &&
+                condition.rightValue.booleanValue === 'true'
+            ) {
                 if (this.hasAlwaysTrueFormula(condition.leftValueReference)) {
                     return 'NO_CRITERIA';
                 }
@@ -70,7 +79,7 @@ export default class FlowParser {
         }
         return 'CONDITIONS_ARE_MET';
     }
-    
+
     getActionSequence(actions, nextActionName) {
         const nextAction = this.getAction(nextActionName);
         if (nextAction) {
@@ -80,7 +89,7 @@ export default class FlowParser {
             }
         } else if (actions.length === 0) {
             const pmDecision = this.getDecision(nextActionName);
-            if(pmDecision) {
+            if (pmDecision) {
                 const rules = this.toArray(pmDecision.rules);
                 const connectedRule = rules.find(r => r.connector !== undefined);
                 if (connectedRule) {
@@ -91,12 +100,49 @@ export default class FlowParser {
         return actions;
     }
 
-    getDecision(name) {
+    getDecision(name: string) {
         return this.decisions.find(d => d.name === name);
     }
 
-    getAction(name) {
+    getAction(name: string) {
         return this.processActions.find(a => a.name === name);
+    }
+
+    getActionDetail(action) {
+        const result = [];
+        const actionPmvs = this.toArray(action.processMetadataValues);
+        const actionInputs = this.toArray(action.inputParameters);
+        const actionLayout = layout[action.actionType];
+        if (actionLayout) {
+            for (const m of actionLayout.metadata) {
+                result.push({
+                    name: m.name,
+                    value: actionPmvs.find(pmv => pmv.name === m.name).value[m.type],
+                });
+            }
+            for (const param of actionLayout.params) {
+                result.push({
+                    name: param.name,
+                    value: actionInputs.find(i => i.name === param.name).value[param.type],
+                });
+            }
+        }
+        return result;
+    }
+
+    getActionDetailFields(action) {
+        const result = [];
+        const actionLayout = layout[action.actionType];
+        if (actionLayout && actionLayout.hasFields) {
+            const params = this.toArray(action.inputParameters || action.inputAssignments);
+            for (const i of params) {
+                const field = i.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
+                const type = i.processMetadataValues.find(ap => ap.name === 'dataType').value.stringValue;
+                const value = i.value.stringValue;
+                result.push([field, type, value]);
+            }
+        }
+        return result;
     }
 
     getScheduledActionSections(waitName) {
@@ -106,11 +152,14 @@ export default class FlowParser {
         }
         const waitEvents = this.toArray(wait.waitEvents);
         const sections: ScheduledActionSection[] = [];
-        for(const waitEvent of waitEvents) {
+        for (const waitEvent of waitEvents) {
             const waitEventSummary = this.getWaitEventSummary(waitEvent);
             const section: ScheduledActionSection = {
                 wait: waitEventSummary,
-                actions: this.getWaitEventActions(waitEvent, Object.prototype.hasOwnProperty.call(waitEventSummary, 'field'))
+                actions: this.getWaitEventActions(
+                    waitEvent,
+                    Object.prototype.hasOwnProperty.call(waitEventSummary, 'field')
+                ),
             };
             sections.push(section);
         }
@@ -145,18 +194,18 @@ export default class FlowParser {
     }
 
     hasAlwaysTrueFormula(name) {
-        return this.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true' );
+        return this.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
     }
-    
+
     getFormulaExpression(name) {
-        const result = this.formulas.find(f => f.name === name );
+        const result = this.formulas.find(f => f.name === name);
         return result.processMetadataValues.value.stringValue;
     }
 
-    toArray = (elements) => {
+    toArray = elements => {
         if (elements) {
             return Array.isArray(elements) ? elements : [elements];
         }
         return [];
-    }
+    };
 }

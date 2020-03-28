@@ -9,62 +9,61 @@ import fonts from '../../../style/font';
 const Pdf = require('pdfmake');
 
 Messages.importMessagesDirectory(__dirname);
-const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages')
+const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages');
 
 const API_VERSION = '48.0';
 export default class Generate extends SfdxCommand {
+    public static description = messages.getMessage('commandDescription');
 
-  public static description = messages.getMessage('commandDescription');
-
-  public static examples = [
-  `$ sfdx flowdoc:pdf:generate Example
+    public static examples = [
+        `$ sfdx flowdoc:pdf:generate Example
   Documentation of 'Example' flow is successfully generated.
   `,
-  `$ sfdx flowdoc:pdf:generate Example -l ja
+        `$ sfdx flowdoc:pdf:generate Example -l ja
   Documentation of 'Example' flow is successfully generated.
-  `
-  ];
+  `,
+    ];
 
-  public static args = [{name: 'file'}];
+    public static args = [{ name: 'file' }];
 
-  protected static flagsConfig = {
-    locale: flags.string({char: 'l', description: messages.getMessage('localeFlagDescription')}),
-    outdir: flags.string({char: 'o', description: messages.getMessage('outdirFlagDescription')})
-  };
+    protected static flagsConfig = {
+        locale: flags.string({ char: 'l', description: messages.getMessage('localeFlagDescription') }),
+        outdir: flags.string({ char: 'o', description: messages.getMessage('outdirFlagDescription') }),
+    };
 
-  protected static requiresUsername = true;
+    protected static requiresUsername = true;
 
-  protected static requiresProject = true;
+    protected static requiresProject = true;
 
-  public async run(): Promise<any> {
-    if (!this.args.file) {
-      throw new SfdxError(messages.getMessage('errorParamNotFound'));
+    public async run(): Promise<any> {
+        if (!this.args.file) {
+            throw new SfdxError(messages.getMessage('errorParamNotFound'));
+        }
+
+        const conn = this.org.getConnection();
+        conn.setApiVersion(API_VERSION);
+
+        const flow = await conn.metadata.read('Flow', this.args.file);
+        if (Object.keys(flow).length === 0) {
+            throw new SfdxError(messages.getMessage('errorFlowNotFound'));
+        }
+        const fp = new FlowParser((flow as unknown) as Flow);
+        if (!fp.isSupportedFlow) {
+            throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
+        }
+        const r = new Renderer(fp, this.flags.locale, this.args.file);
+
+        const docDefinition = r.createDocDefinition();
+
+        const printer = new Pdf(fonts);
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+        const targetPath = `${this.args.file}.pdf`;
+        pdfDoc.pipe(fs.createWriteStream(targetPath));
+        pdfDoc.end();
+        const label: string = fp.getLabel();
+        this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
+
+        return flow;
     }
-
-    const conn = this.org.getConnection();
-    conn.setApiVersion(API_VERSION);
-
-    const flow = await conn.metadata.read('Flow', this.args.file);
-    if(Object.keys(flow).length === 0) {
-      throw new SfdxError(messages.getMessage('errorFlowNotFound'));
-    }
-    const fp = new FlowParser(flow as unknown as Flow); 
-    if (!fp.isSupportedFlow) {
-      throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
-    }
-    const r = new Renderer(fp, this.flags.locale, this.args.file);
-
-    const docDefinition = r.createDocDefinition();
-
-    const printer = new Pdf(fonts);
-    const pdfDoc = printer.createPdfKitDocument(docDefinition);
-
-    const targetPath = `${this.args.file}.pdf`;
-    pdfDoc.pipe(fs.createWriteStream(targetPath));
-    pdfDoc.end();
-    const label: string = fp.getLabel(); 
-    this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
-
-    return flow;
-  }
 }
