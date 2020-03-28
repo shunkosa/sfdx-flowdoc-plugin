@@ -11,6 +11,7 @@ const Pdf = require('pdfmake');
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages')
 
+const API_VERSION = '48.0';
 export default class Generate extends SfdxCommand {
 
   public static description = messages.getMessage('commandDescription');
@@ -41,7 +42,7 @@ export default class Generate extends SfdxCommand {
     }
 
     const conn = this.org.getConnection();
-    conn.setApiVersion('48.0');
+    conn.setApiVersion(API_VERSION);
 
     const flow = await conn.metadata.read('Flow', this.args.file);
     if(Object.keys(flow).length === 0) {
