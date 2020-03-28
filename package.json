@@ -79,7 +79,10 @@
         "postpublish": "npm run clean; git push; git push --tags",
         "test": "jest --coverage",
         "validate": "eslint src/**/*.ts",
-        "version": "oclif-dev readme && git add README.md"
+        "version": "oclif-dev readme && git add README.md",
+        "prettier": "prettier --write \"**/*.{ts,js,json,md,yaml,yml}\"",
+        "prettier:verify": "prettier --list-different \"**/*.{ts,js,json,md,yaml,yml}\"",
+        "prettier:debug": "prettier --debug-check \"**/*.{ts,js,json,md,yaml,yml}\""
     },
     "husky": {
         "hooks": {
