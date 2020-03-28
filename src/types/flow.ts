@@ -1,12 +1,14 @@
+import { ProcessMetadataValue } from './processMetadataValue';
+
 export interface Flow {
     processType: string,
     label: string,
     description: string,
-    startElementReference:string
-    variables: Variable[] | Variable
+    startElementReference: string
+    variables: Variable | Variable[],
     processMetadataValues: ProcessMetadataValue[],
     formulas: any,
-    decisions: any,
+    decisions: Decision | Decision[],
     actionCalls: any,
     recordUpdates: any,
     recordCreates: any,
@@ -17,11 +19,12 @@ interface Variable {
     objectType: string
 }
 
-interface ProcessMetadataValue {
+export interface Decision {
     name: string,
-    value: {
-        stringValue: string
-    }
+    label: string,
+    processMetadataValues?: ProcessMetadataValue,
+    rules: any,
+    defaultConnector: any
 }
 
 export interface ScheduledActionSection {
