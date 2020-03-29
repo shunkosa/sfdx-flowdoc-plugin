@@ -1,5 +1,12 @@
 {
-    "extends": ["oclif", "oclif-typescript", "airbnb-base", "airbnb-typescript/base", "prettier/@typescript-eslint", "prettier"],
+    "extends": [
+        "oclif",
+        "oclif-typescript",
+        "airbnb-base",
+        "airbnb-typescript/base",
+        "prettier/@typescript-eslint",
+        "prettier"
+    ],
     "parserOptions": {
         "ecmaVersion": 2019
     },
@@ -10,14 +17,12 @@
     },
     "rules": {
         "no-await-in-loop": "warn",
-        "no-plusplus": [
-            "error",
-            { "allowForLoopAfterthoughts": true }
-        ],
+        "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
         "no-use-before-define": "off",
         "no-underscore-dangle": "off",
         "no-continue": "off",
         "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
+        "prefer-destructuring": ["error", { "object": true, "array": false }],
         "import/prefer-default-export": "warn",
         "import/no-extraneous-dependencies": "off",
         "@typescript-eslint/no-use-before-define": "off",
