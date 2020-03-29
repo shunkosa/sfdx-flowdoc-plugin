@@ -17,5 +17,7 @@ describe('lib/flowParser', () => {
         expect(flowParser.getObjectType()).toBe('Opportunity');
     });
 
-}); 
-  
+    it('standard decisions', () => {
+        expect(flowParser.getStandardDecisions()).toHaveLength(4);
+    });
+});
