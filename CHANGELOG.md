@@ -1,3 +1,10 @@
+# 0.0.9 - March 29, 2020
+
+## Add
+
+-   Shows 'What Happens After Evaluating This Criteria' in each action group
+-   Replace variable `myVariable_current` to object name (WIP)
+
 # 0.0.8 - March 29, 2020
 
 ## Add
