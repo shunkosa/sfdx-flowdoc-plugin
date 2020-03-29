@@ -216,6 +216,9 @@ export default class FlowParser {
     }
 
     resolveValue = value => {
+        if (!value) {
+            return '$GlobalConstant.null';
+        }
         const key = Object.keys(value)[0];
         // TODO: resolve variable reference
         if (key === 'elementReference' && !value[key].includes('.')) {
