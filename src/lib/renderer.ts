@@ -47,7 +47,7 @@ export default class Renderer {
                 ? this.i18n.__('WHEN_A_RECORD_IS_CREATED_OR_EDITED')
                 : this.i18n.__('ONLY_WHEN_A_RECORD_IS_CREATED');
         const overview = {
-            layout: 'lightHorizontalLines', // optional
+            layout: 'lightHorizontalLines',
             table: {
                 widths: [200, 'auto'],
                 body: [
@@ -162,25 +162,30 @@ export default class Renderer {
             margin: [0, 0, 0, 10],
         };
         const actionDetail = this.flowParser.getActionDetail(action);
-        for (const d of actionDetail) {
-            actionTable.table.body.push([this.th(this.i18n.__(`ACTION_DETAIL_${d.name}`)), d.value]);
+        for (const d of actionDetail.rows) {
+            actionTable.table.body.push([
+                this.th(this.i18n.__(`ACTION_DETAIL_${action.actionType}_${d.name}`)),
+                d.value,
+            ]);
         }
 
-        const actionDetailParams = this.flowParser.getActionDetailFields(action);
-        if (actionDetailParams.length === 0) {
-            return [actionTable];
+        if (actionDetail.fields && actionDetail.fields.length > 0) {
+            const paramTable = {
+                unbreakable: true,
+                layout: 'lightHorizontalLines',
+                table: {
+                    body: [
+                        [this.th(this.i18n.__('FIELD')), this.th(this.i18n.__('TYPE')), this.th(this.i18n.__('VALUE'))],
+                    ],
+                },
+                margin: [15, 0, 0, 10],
+            };
+            for (const f of actionDetail.fields) {
+                paramTable.table.body.push(f);
+            }
+            return [actionTable, paramTable];
         }
-        const paramTable = {
-            unbreakable: true,
-            table: {
-                body: [[this.th(this.i18n.__('FIELD')), this.th(this.i18n.__('TYPE')), this.th(this.i18n.__('VALUE'))]],
-            },
-            margin: [15, 0, 0, 10],
-        };
-        for (const ap of actionDetailParams) {
-            paramTable.table.body.push(ap);
-        }
-        return [actionTable, paramTable];
+        return [actionTable];
     };
 
     renderScheduledActionSummary = (summary: WaitEventSummary) => {

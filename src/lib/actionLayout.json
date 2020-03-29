@@ -1,0 +1,123 @@
+{
+    "apex": [
+        {
+            "key": [],
+            "structure": {
+                "metadata": [{ "name": "apexSelection", "type": "stringValue" }],
+                "params": [],
+                "hasFields": true
+            }
+        }
+    ],
+    "chatterPost": [
+        {
+            "key": [
+                {
+                    "type": "inputParameters",
+                    "name": "subjectNameOrId",
+                    "valueType": "elementReference",
+                    "value": "myVariable_current.Id"
+                }
+            ],
+            "structure": {
+                "metadata": [],
+                "params": [
+                    { "name": "subjectNameOrId", "type": "elementReference" },
+                    { "name": "text", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "inputParameters",
+                    "name": "type",
+                    "valueType": "stringValue",
+                    "value": "GROUP"
+                }
+            ],
+            "structure": {
+                "metadata": [{ "name": "postTarget", "type": "stringValue" }],
+                "params": [
+                    { "name": "text", "type": "stringValue" },
+                    { "name": "type", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "inputParameters",
+                    "name": "type",
+                    "valueType": "stringValue",
+                    "value": "USER"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "postTargetUserType",
+                    "valueType": "stringValue",
+                    "value": "REFERENCE"
+                }
+            ],
+            "structure": {
+                "metadata": [],
+                "params": [
+                    { "name": "subjectNameOrId", "type": "elementReference" },
+                    { "name": "text", "type": "stringValue" },
+                    { "name": "type", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "inputParameters",
+                    "name": "type",
+                    "valueType": "stringValue",
+                    "value": "USER"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "postTargetUserType",
+                    "valueType": "stringValue",
+                    "value": "USER"
+                }
+            ],
+            "structure": {
+                "metadata": [{ "name": "postTarget", "type": "stringValue" }],
+                "params": [
+                    { "name": "text", "type": "stringValue" },
+                    { "name": "type", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        }
+    ],
+    "quickAction": [
+        {
+            "key": [],
+            "structure": {
+                "metadata": [
+                    { "name": "filterType", "type": "stringValue" },
+                    { "name": "quickActionSelectionType", "type": "stringValue" },
+                    { "name": "quickActionSelection", "type": "stringValue" }
+                ],
+                "params": [],
+                "hasFields": true
+            }
+        }
+    ],
+    "emailAlert": [
+        {
+            "key": [],
+            "structure": {
+                "metadata": [{ "name": "emailAlertSelection", "type": "stringValue" }],
+                "params": [],
+                "hasFields": false
+            }
+        }
+    ]
+}
