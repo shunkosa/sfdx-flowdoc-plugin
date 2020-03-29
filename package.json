@@ -73,7 +73,7 @@
     },
     "repository": "shunkosa/sfdx-flowdoc-plugin",
     "scripts": {
-        "build": "rimraf lib && tsc -b && cp -r src/assets lib/assets && cp src/style/style.json lib/style/style.json && cp -r src/config/locale lib/config/locale",
+        "build": "rimraf lib && tsc -b && cp -r src/assets lib/assets && cp src/style/style.json lib/style/style.json && cp -r src/config/locale lib/config/locale && cp src/lib/actionLayout.json lib/lib/actionLayout.json",
         "clean": "rimraf oclif.manifest.json",
         "prepare": "npm run build && oclif-dev manifest",
         "postpublish": "npm run clean; git push; git push --tags",
