@@ -1,4 +1,4 @@
-import { Flow, Decision, ScheduledActionSection, WaitEventSummary } from '../types/flow';
+import { Flow, Decision, ScheduledActionSection, WaitEventSummary, InputParamValue } from '../types/flow';
 
 const layout = require('./actionLayout.json');
 
@@ -215,14 +215,21 @@ export default class FlowParser {
         return this.getActionSequence([], nextReference);
     }
 
-    resolveValue = value => {
+    resolveValue = (value: string | InputParamValue) => {
         if (!value) {
             return '$GlobalConstant.null';
         }
-        const key = Object.keys(value)[0];
-        // TODO: resolve variable reference
-        if (key === 'elementReference' && !value[key].includes('.')) {
-            return this.getFormulaExpression(value[key]);
+        if (typeof value === 'string' && value.includes('myVariable_current')) {
+            return value.replace('myVariable_current', `[${this.getObjectType()}]`);
+        }
+        const key = Object.keys(value)[0]; // stringValue or elementReference
+        if (key === 'elementReference') {
+            if (!value[key].includes('.')) {
+                return this.getFormulaExpression(value[key]);
+            }
+            if (value[key].includes('myVariable_current')) {
+                return value[key].replace('myVariable_current', `[${this.getObjectType()}]`);
+            }
         }
         return value[key];
     };

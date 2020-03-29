@@ -150,9 +150,10 @@ export default class Renderer {
             margin: [15, 5, 0, 0],
         };
         conditions.forEach((c, index) => {
+            const leftValue = this.flowParser.resolveValue(c.leftValueReference);
             conditionTable.table.body.push([
                 index + 1,
-                c.leftValueReference,
+                leftValue,
                 c.operator,
                 Object.keys(c.rightValue)[0],
                 Object.values(c.rightValue)[0],
