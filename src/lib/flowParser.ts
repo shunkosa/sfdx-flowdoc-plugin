@@ -52,6 +52,14 @@ export default class FlowParser {
         return this.processMetadataValues.find(p => p.name === 'TriggerType').value.stringValue;
     }
 
+    getDecision(name: string) {
+        return this.decisions.find(d => d.name === name);
+    }
+
+    getAction(name: string) {
+        return this.processActions.find(a => a.name === name);
+    }
+
     getStandardDecisions(): Decision[] {
         return this.decisions
             .filter(d => d.processMetadataValues !== undefined)
@@ -80,6 +88,10 @@ export default class FlowParser {
         return 'CONDITIONS_ARE_MET';
     }
 
+    hasAlwaysTrueFormula(name) {
+        return this.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
+    }
+
     getActionSequence(actions, nextActionName) {
         const nextAction = this.getAction(nextActionName);
         if (nextAction) {
@@ -98,14 +110,6 @@ export default class FlowParser {
             }
         }
         return actions;
-    }
-
-    getDecision(name: string) {
-        return this.decisions.find(d => d.name === name);
-    }
-
-    getAction(name: string) {
-        return this.processActions.find(a => a.name === name);
     }
 
     getActionDetail(action) {
@@ -211,15 +215,6 @@ export default class FlowParser {
         return this.getActionSequence([], nextReference);
     }
 
-    hasAlwaysTrueFormula(name) {
-        return this.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
-    }
-
-    getFormulaExpression(name) {
-        const result = this.formulas.find(f => f.name === name);
-        return result.processMetadataValues.value.stringValue;
-    }
-
     resolveValue = value => {
         const key = Object.keys(value)[0];
         // TODO: resolve variable reference
@@ -228,6 +223,11 @@ export default class FlowParser {
         }
         return value[key];
     };
+
+    getFormulaExpression(name) {
+        const result = this.formulas.find(f => f.name === name);
+        return result.processMetadataValues.value.stringValue;
+    }
 
     toArray = elements => {
         if (elements) {
