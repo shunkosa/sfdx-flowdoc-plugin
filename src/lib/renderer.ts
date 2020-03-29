@@ -134,19 +134,22 @@ export default class Renderer {
             unbreakable: true,
             table: {
                 headerRows: 1,
-                width: ['auto', 100, 'auto', 'auto'],
-                body: [[this.i18n.__('FIELD'), this.i18n.__('OPERATOR'), this.i18n.__('TYPE'), this.i18n.__('VALUE')]],
+                width: ['auto', 'auto', 100, 'auto', 'auto'],
+                body: [
+                    ['', this.i18n.__('FIELD'), this.i18n.__('OPERATOR'), this.i18n.__('TYPE'), this.i18n.__('VALUE')],
+                ],
             },
             margin: [15, 5, 0, 0],
         };
-        for (const c of conditions) {
+        conditions.forEach((c, index) => {
             conditionTable.table.body.push([
+                index + 1,
                 c.leftValueReference,
                 c.operator,
                 Object.keys(c.rightValue)[0],
                 Object.values(c.rightValue)[0],
             ]);
-        }
+        });
         return conditionTable;
     };
 
@@ -175,14 +178,19 @@ export default class Renderer {
                 layout: 'lightHorizontalLines',
                 table: {
                     body: [
-                        [this.th(this.i18n.__('FIELD')), this.th(this.i18n.__('TYPE')), this.th(this.i18n.__('VALUE'))],
+                        [
+                            '',
+                            this.th(this.i18n.__('FIELD')),
+                            this.th(this.i18n.__('TYPE')),
+                            this.th(this.i18n.__('VALUE')),
+                        ],
                     ],
                 },
                 margin: [15, 0, 0, 10],
             };
-            for (const f of actionDetail.fields) {
-                paramTable.table.body.push(f);
-            }
+            actionDetail.fields.forEach((f, index) => {
+                paramTable.table.body.push([index + 1, ...f]);
+            });
             return [actionTable, paramTable];
         }
         return [actionTable];
