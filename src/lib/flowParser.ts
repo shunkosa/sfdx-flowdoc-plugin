@@ -155,7 +155,7 @@ export default class FlowParser {
             for (const i of params) {
                 const field = i.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
                 const type = i.processMetadataValues.find(ap => ap.name === 'dataType').value.stringValue;
-                const value = i.value.stringValue;
+                const value = this.resolveValue(i.value);
                 fields.push([field, type, value]);
             }
             return { rows, fields };
@@ -219,6 +219,15 @@ export default class FlowParser {
         const result = this.formulas.find(f => f.name === name);
         return result.processMetadataValues.value.stringValue;
     }
+
+    resolveValue = value => {
+        const key = Object.keys(value)[0];
+        // TODO: resolve variable reference
+        if (key === 'elementReference' && !value[key].includes('.')) {
+            return this.getFormulaExpression(value[key]);
+        }
+        return value[key];
+    };
 
     toArray = elements => {
         if (elements) {
