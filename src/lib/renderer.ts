@@ -83,21 +83,29 @@ export default class Renderer {
                     }
                 }
                 const lastAction = actions.slice(-1)[0];
+                let evaluatesNext = false;
                 if (lastAction.connector) {
                     const scheduledActionSections = this.flowParser.getScheduledActionSections(
                         lastAction.connector.targetReference
                     );
-                    if (!scheduledActionSections || scheduledActionSections.length === 0) {
-                        continue;
-                    }
-                    content.push(this.h3(this.i18n.__('HEADER_SCHEDULED_ACTIONS')));
-                    for (const section of scheduledActionSections) {
-                        content.push(this.renderScheduledActionSummary(section.wait));
-                        for (const action of section.actions) {
-                            content.push(this.renderAction(action));
+                    if (scheduledActionSections && scheduledActionSections.length > 0) {
+                        content.push(this.h3(this.i18n.__('HEADER_SCHEDULED_ACTIONS')));
+                        for (const section of scheduledActionSections) {
+                            content.push(this.renderScheduledActionSummary(section.wait));
+                            for (const action of section.actions) {
+                                content.push(this.renderAction(action));
+                            }
                         }
                     }
+                    const nextDecision = this.flowParser.getDecision(lastAction.connector.targetReference);
+                    if (nextDecision && nextDecision.processMetadataValues) {
+                        evaluatesNext = true;
+                    }
                 }
+                content.push(this.h3(this.i18n.__('AFTER_THIS_CRITERIA')));
+                content.push(
+                    evaluatesNext ? this.i18n.__('EVALUATE_THE_NEXT_CRITERIA') : this.i18n.__('STOP_THE_PROCESS')
+                );
             }
         }
         return content;
