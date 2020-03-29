@@ -40,8 +40,8 @@
             "structure": {
                 "metadata": [{ "name": "postTarget", "type": "stringValue" }],
                 "params": [
-                    { "name": "text", "type": "stringValue" },
-                    { "name": "type", "type": "stringValue" }
+                    { "name": "type", "type": "stringValue" },
+                    { "name": "text", "type": "stringValue" }
                 ],
                 "hasFields": false
             }
@@ -64,9 +64,9 @@
             "structure": {
                 "metadata": [],
                 "params": [
+                    { "name": "type", "type": "stringValue" },
                     { "name": "subjectNameOrId", "type": "elementReference" },
-                    { "name": "text", "type": "stringValue" },
-                    { "name": "type", "type": "stringValue" }
+                    { "name": "text", "type": "stringValue" }
                 ],
                 "hasFields": false
             }
@@ -89,8 +89,8 @@
             "structure": {
                 "metadata": [{ "name": "postTarget", "type": "stringValue" }],
                 "params": [
-                    { "name": "text", "type": "stringValue" },
-                    { "name": "type", "type": "stringValue" }
+                    { "name": "type", "type": "stringValue" },
+                    { "name": "text", "type": "stringValue" }
                 ],
                 "hasFields": false
             }
@@ -117,6 +117,19 @@
                 "metadata": [{ "name": "emailAlertSelection", "type": "stringValue" }],
                 "params": [],
                 "hasFields": false
+            }
+        }
+    ],
+    "flow": [
+        {
+            "key": [],
+            "structure": {
+                "metadata": [
+                    { "name": "ActionCallType", "type": "stringValue" },
+                    { "name": "flowSelection", "type": "stringValue" }
+                ],
+                "params": [],
+                "hasFields": true
             }
         }
     ]
