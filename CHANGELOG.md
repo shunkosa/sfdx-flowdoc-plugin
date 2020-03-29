@@ -1,3 +1,14 @@
+# 0.0.8 - March 29, 2020
+
+## Add
+
+-   Shows action detail of Flow / Process call
+-   Shows row number of criteria rules and action fields
+
+## Fix
+
+-   Fix display order of chatter post action
+
 # 0.0.7 - March 29, 2020
 
 ## Add
