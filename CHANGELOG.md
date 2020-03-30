@@ -1,26 +1,32 @@
+# 0.0.10 - March 30, 2020
+
+## Add
+
+-   Added action detail of [Create a Record] and [Update Records]
+
 # 0.0.9 - March 29, 2020
 
 ## Add
 
--   Shows 'What Happens After Evaluating This Criteria' in each action group
+-   Added 'What Happens After Evaluating This Criteria' in each action group
 -   Replace variable `myVariable_current` to object name (WIP)
 
 # 0.0.8 - March 29, 2020
 
 ## Add
 
--   Shows action detail of Flow / Process call
--   Shows row number of criteria rules and action fields
+-   Added action detail of Flow / Process call
+-   Added row number of criteria rules and action fields
 
 ## Fix
 
--   Fix display order of chatter post action
+-   Fixed display order of chatter post action
 
 # 0.0.7 - March 29, 2020
 
 ## Add
 
--   Shows action detail of Apex, Chatter, Email Alert, and Quick Action
+-   Added action detail of Apex, Chatter, Email Alert, and Quick Action
 
 # 0.0.6 - March 25, 2020
 
