@@ -1,6 +1,15 @@
-import { Flow, Decision, ScheduledActionSection, WaitEventSummary, InputParamValue } from '../types/flow';
-
-const layout = require('./actionLayout.json');
+import {
+    Flow,
+    Decision,
+    ScheduledActionSection,
+    WaitEventSummary,
+    ActionCall,
+    implementsActionCall,
+    InputParamValue,
+} from '../types/flow';
+import { RecordCreate, RecordUpdate, implementsRecordCreate, implementsRecordUpdate } from '../types/flowRecordAction';
+import { getActionCallDetail, getRecordCreateDetail, getRecordUpdateDetail } from './actionParser';
+import { toArray } from './arrayUtils';
 
 export default class FlowParser {
     private readonly flow: Flow;
@@ -9,7 +18,11 @@ export default class FlowParser {
 
     private readonly decisions: Decision[];
 
-    private readonly processActions;
+    private readonly actionCalls: ActionCall[];
+
+    private readonly recordCreates: RecordCreate[];
+
+    private readonly recordUpdates: RecordUpdate[];
 
     private readonly formulas;
 
@@ -18,22 +31,16 @@ export default class FlowParser {
     constructor(flow: Flow) {
         this.flow = flow;
 
-        this.processMetadataValues = this.toArray(this.flow.processMetadataValues);
+        for (const arrayName of ['processMetadataValues', 'decisions', 'actionCalls', 'formulas', 'waits']) {
+            this[arrayName] = toArray(this.flow[arrayName]);
+        }
 
-        this.decisions = this.toArray(this.flow.decisions);
-
-        const actions = this.toArray(this.flow.actionCalls);
-        const rawRecordUpdates = this.toArray(this.flow.recordUpdates);
-        const recordUpdates =
+        const rawRecordUpdates = toArray(this.flow.recordUpdates);
+        this.recordUpdates =
             rawRecordUpdates.length !== 0 ? rawRecordUpdates.map(a => ({ ...a, actionType: 'RECORD_UPDATE' })) : [];
-        const rawRecordCreates = this.toArray(this.flow.recordCreates);
-        const recordCreates =
+        const rawRecordCreates = toArray(this.flow.recordCreates);
+        this.recordCreates =
             rawRecordCreates.length !== 0 ? rawRecordCreates.map(a => ({ ...a, actionType: 'RECORD_CREATE' })) : [];
-        this.processActions = [...actions, ...recordUpdates, ...recordCreates];
-
-        this.formulas = this.toArray(this.flow.formulas);
-
-        this.waits = this.toArray(this.flow.waits);
     }
 
     isSupportedFlow() {
@@ -56,8 +63,12 @@ export default class FlowParser {
         return this.decisions.find(d => d.name === name);
     }
 
-    getAction(name: string) {
-        return this.processActions.find(a => a.name === name);
+    getAction(name: string): ActionCall | RecordUpdate | RecordCreate {
+        return (
+            this.actionCalls.find(a => a.name === name) ||
+            this.recordCreates.find(a => a.name === name) ||
+            this.recordUpdates.find(a => a.name === name)
+        );
     }
 
     getStandardDecisions(): Decision[] {
@@ -102,7 +113,7 @@ export default class FlowParser {
         } else if (actions.length === 0) {
             const pmDecision = this.getDecision(nextActionName);
             if (pmDecision) {
-                const rules = this.toArray(pmDecision.rules);
+                const rules = toArray(pmDecision.rules);
                 const connectedRule = rules.find(r => r.connector !== undefined);
                 if (connectedRule) {
                     this.getActionSequence(actions, connectedRule.connector.targetReference);
@@ -112,67 +123,25 @@ export default class FlowParser {
         return actions;
     }
 
-    getActionDetail(action) {
-        const actionPmvs = this.toArray(action.processMetadataValues);
-        const actionInputs = this.toArray(action.inputParameters);
-        const actionLayout = layout[action.actionType];
-
-        if (!actionLayout) {
-            return { rows: [] };
+    getActionDetail = (action: ActionCall | RecordCreate | RecordUpdate) => {
+        if (implementsActionCall(action)) {
+            return getActionCallDetail(this, action);
         }
-
-        let targetLayout;
-        if (actionLayout.length === 1) {
-            targetLayout = actionLayout[0];
-        } else {
-            for (const l of actionLayout) {
-                const keys = l.key;
-                let isMatched = false;
-                for (const k of keys) {
-                    const param = action[k.type].find(p => p.name === k.name);
-                    isMatched = param && param.value ? param.value[k.valueType] === k.value : false;
-                }
-                if (isMatched) {
-                    targetLayout = l;
-                    break;
-                }
-            }
+        if (implementsRecordCreate(action)) {
+            return getRecordCreateDetail(this, action);
         }
-
-        const rows = [];
-        for (const m of this.toArray(targetLayout.structure.metadata)) {
-            rows.push({
-                name: m.name,
-                value: actionPmvs.find(pmv => pmv.name === m.name).value[m.type],
-            });
+        if (implementsRecordUpdate(action)) {
+            return getRecordUpdateDetail(action);
         }
-        for (const param of this.toArray(targetLayout.structure.params)) {
-            rows.push({
-                name: param.name,
-                value: actionInputs.find(i => i.name === param.name).value[param.type],
-            });
-        }
-
-        if (targetLayout.structure.hasFields) {
-            const params = this.toArray(action.inputParameters || action.inputAssignments);
-            const fields = [];
-            for (const i of params) {
-                const field = i.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
-                const type = i.processMetadataValues.find(ap => ap.name === 'dataType').value.stringValue;
-                const value = this.resolveValue(i.value);
-                fields.push([field, type, value]);
-            }
-            return { rows, fields };
-        }
-        return { rows };
-    }
+        return { rows: [] };
+    };
 
     getScheduledActionSections(waitName) {
         const wait = this.waits.find(a => a.name === waitName);
         if (!wait) {
             return undefined;
         }
-        const waitEvents = this.toArray(wait.waitEvents);
+        const waitEvents = toArray(wait.waitEvents);
         const sections: ScheduledActionSection[] = [];
         for (const waitEvent of waitEvents) {
             const waitEventSummary = this.getWaitEventSummary(waitEvent);
@@ -188,8 +157,8 @@ export default class FlowParser {
         return sections;
     }
 
-    getWaitEventSummary(waitEvent): WaitEventSummary {
-        const inputParams = this.toArray(waitEvent.inputParameters);
+    getWaitEventSummary = (waitEvent): WaitEventSummary => {
+        const inputParams = toArray(waitEvent.inputParameters);
         const rawTimeOffset = Number(inputParams.find(i => i.name === 'TimeOffset').value.numberValue);
         const referencedFieldParam = inputParams.find(i => i.name === 'TimeFieldColumnEnumOrId');
         const summary: WaitEventSummary = {
@@ -201,7 +170,7 @@ export default class FlowParser {
             summary.field = referencedFieldParam.value.stringValue;
         }
         return summary;
-    }
+    };
 
     getWaitEventActions(waitEvent, comparedToField) {
         let nextReference = waitEvent.connector.targetReference;
@@ -219,9 +188,14 @@ export default class FlowParser {
         if (!value) {
             return '$GlobalConstant.null';
         }
-        if (typeof value === 'string' && value.includes('myVariable_current')) {
-            return value.replace('myVariable_current', `[${this.getObjectType()}]`);
+        // String
+        if (typeof value === 'string') {
+            if (value.includes('myVariable_current')) {
+                return value.replace('myVariable_current', `[${this.getObjectType()}]`);
+            }
+            return value;
         }
+        // Object
         const key = Object.keys(value)[0]; // stringValue or elementReference
         if (key === 'elementReference') {
             if (!value[key].includes('.')) {
@@ -238,11 +212,4 @@ export default class FlowParser {
         const result = this.formulas.find(f => f.name === name);
         return result.processMetadataValues.value.stringValue;
     }
-
-    toArray = elements => {
-        if (elements) {
-            return Array.isArray(elements) ? elements : [elements];
-        }
-        return [];
-    };
 }

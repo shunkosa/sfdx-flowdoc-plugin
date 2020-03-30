@@ -69,6 +69,7 @@
     "ACTION_DETAIL_quickAction_quickActionSelection": "Quick Action",
     "ACTION_DETAIL_flow_ActionCallType": "Type",
     "ACTION_DETAIL_flow_flowSelection": "Flow / Process Name",
+    "ACTION_DETAIL_RECORD_CREATE_recordType": "Record Type",
     "DAYS": "Days",
     "HOURS": "Hours",
     "BEFORE": "Before",
