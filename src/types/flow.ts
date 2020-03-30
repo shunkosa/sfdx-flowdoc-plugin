@@ -1,4 +1,5 @@
 import { ProcessMetadataValue } from './processMetadataValue';
+import { RecordCreate, RecordUpdate } from './flowRecordAction';
 
 export interface Flow {
     processType: string;
@@ -9,14 +10,27 @@ export interface Flow {
     processMetadataValues: ProcessMetadataValue[];
     formulas: any;
     decisions: Decision | Decision[];
-    actionCalls: any;
-    recordUpdates: any;
-    recordCreates: any;
+    actionCalls: ActionCall | ActionCall[];
+    recordUpdates: RecordUpdate | RecordUpdate[];
+    recordCreates: RecordCreate | RecordCreate[];
     waits: any;
 }
 
 interface Variable {
     objectType: string;
+}
+
+export interface ActionCall {
+    actionType: string;
+    name: string;
+    label: string;
+    connector: any;
+    processMetadataValues: any;
+    inputParameters: any;
+}
+
+export function implementsActionCall(arg: any): arg is ActionCall {
+    return !arg.actionType.includes('RECORD_');
 }
 
 export interface Decision {
