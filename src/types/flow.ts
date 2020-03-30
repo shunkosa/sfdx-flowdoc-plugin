@@ -10,9 +10,9 @@ export interface Flow {
     processMetadataValues: ProcessMetadataValue[];
     formulas: any;
     decisions: Decision | Decision[];
-    actionCalls: ActionCall | ActionCall[];
-    recordUpdates: RecordUpdate | RecordUpdate[];
-    recordCreates: RecordCreate | RecordCreate[];
+    actionCalls?: ActionCall | ActionCall[];
+    recordUpdates?: RecordUpdate | RecordUpdate[];
+    recordCreates?: RecordCreate | RecordCreate[];
     waits: any;
 }
 

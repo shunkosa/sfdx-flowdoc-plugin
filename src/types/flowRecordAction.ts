@@ -1,28 +1,38 @@
-export interface RecordCreate {
-    processMetadataValues?: any;
+import { ProcessMetadataValue, ElementReferenceOrValue } from './processMetadataValue';
+
+interface Node {
     name: string;
     label: string;
-    actionType: string;
-    assignRecordIdToReference: string;
+    locationX: string;
+    locationY: string;
+    description?: string;
+}
+export interface RecordCreate extends Node {
+    processMetadataValues?: any;
+    actionType?: string;
+    assignRecordIdToReference?: string;
     connector: any;
-    faultConnector: any;
+    faultConnector?: any;
     inputAssignments: any;
-    inputReference: string;
+    inputReference?: string;
     object: string;
-    storeOutputAutomatically: boolean;
+    storeOutputAutomatically?: boolean;
 }
 
-export interface RecordUpdate {
+export interface RecordUpdate extends Node {
     processMetadataValues?: any;
-    name: string;
-    label: string;
-    actionType: string;
+    actionType?: string;
     connector: any;
-    faultConnector: any;
-    filters: any;
+    faultConnector?: any;
+    filters: RecordFilter | RecordFilter[];
     inputAssignments: any;
     object: string;
-    inputReference: string;
+    inputReference?: string;
+}
+
+export interface RecordFilter {
+    processMetadataValues: ProcessMetadataValue | ProcessMetadataValue[];
+    value: ElementReferenceOrValue;
 }
 
 export function implementsRecordCreate(arg: any): arg is RecordCreate {
