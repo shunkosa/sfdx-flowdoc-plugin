@@ -131,7 +131,7 @@ export default class FlowParser {
             return getRecordCreateDetail(this, action);
         }
         if (implementsRecordUpdate(action)) {
-            return getRecordUpdateDetail(action);
+            return getRecordUpdateDetail(this, action);
         }
         return { rows: [] };
     };

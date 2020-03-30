@@ -79,6 +79,26 @@ export default class Renderer {
                     const actionTables = this.renderAction(action);
                     content.push(actionTables[0]);
                     if (actionTables.length > 1) {
+                        if (action.actionType === 'RECORD_UPDATE') {
+                            const filterHeader = this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_FILTER_HEADER');
+                            const filterCondition =
+                                actionTables.length === 3
+                                    ? this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_HAS_CRITERIA')
+                                    : this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_NO_CRITERIA');
+                            content.push({
+                                text: `${filterHeader} : ${filterCondition}`,
+                                margin: [15, 0, 0, 10],
+                            });
+                        }
+                        if (actionTables.length === 3) {
+                            content.push(actionTables[2]);
+                        }
+                        if (action.actionType.includes('RECORD_')) {
+                            content.push({
+                                text: this.i18n.__(`ACTION_DETAIL_${action.actionType}_FIELD_HEADER`),
+                                margin: [15, 0, 0, 10],
+                            });
+                        }
                         content.push(actionTables[1]);
                     }
                 }
@@ -181,28 +201,43 @@ export default class Renderer {
             ]);
         }
 
-        if (actionDetail.fields && actionDetail.fields.length > 0) {
-            const paramTable = {
-                unbreakable: true,
-                layout: 'lightHorizontalLines',
-                table: {
-                    body: [
-                        [
-                            '',
-                            this.th(this.i18n.__('FIELD')),
-                            this.th(this.i18n.__('TYPE')),
-                            this.th(this.i18n.__('VALUE')),
-                        ],
-                    ],
-                },
-                margin: [15, 0, 0, 10],
-            };
-            actionDetail.fields.forEach((f, index) => {
-                paramTable.table.body.push([index + 1, ...f]);
-            });
+        if (!actionDetail.fields || actionDetail.fields.length === 0) {
+            return [actionTable];
+        }
+
+        const paramTable = {
+            unbreakable: true,
+            layout: 'lightHorizontalLines',
+            table: {
+                body: [
+                    ['', this.th(this.i18n.__('FIELD')), this.th(this.i18n.__('TYPE')), this.th(this.i18n.__('VALUE'))],
+                ],
+            },
+            margin: [15, 0, 0, 10],
+        };
+        actionDetail.fields.forEach((f, index) => {
+            paramTable.table.body.push([index + 1, ...f]);
+        });
+
+        if (!actionDetail.filters || actionDetail.filters.length === 0) {
             return [actionTable, paramTable];
         }
-        return [actionTable];
+
+        const filterTable = {
+            unbreakable: true,
+            layout: 'lightHorizontalLines',
+            table: {
+                body: [
+                    ['', this.th(this.i18n.__('FIELD')), this.th(this.i18n.__('TYPE')), this.th(this.i18n.__('VALUE'))],
+                ],
+            },
+            margin: [15, 0, 0, 10],
+        };
+        actionDetail.filters.forEach((f, index) => {
+            filterTable.table.body.push([index + 1, ...f]);
+        });
+
+        return [actionTable, paramTable, filterTable];
     };
 
     renderScheduledActionSummary = (summary: WaitEventSummary) => {

@@ -1,6 +1,7 @@
 import { ActionCall } from '../types/flow';
-import { RecordCreate, RecordUpdate } from '../types/flowRecordAction';
+import { RecordCreate, RecordUpdate, RecordFilter } from '../types/flowRecordAction';
 import { toArray } from './arrayUtils';
+import { ProcessMetadataValue } from '../types/processMetadataValue';
 
 const layout = require('./actionLayout.json');
 
@@ -60,6 +61,7 @@ export function getActionCallDetail(flowParser, action: ActionCall) {
 
 export function getRecordCreateDetail(flowParser, action: RecordCreate) {
     const recordType = action.object;
+
     const assignments = toArray(action.inputAssignments);
     const fields = [];
     for (const a of assignments) {
@@ -68,14 +70,45 @@ export function getRecordCreateDetail(flowParser, action: RecordCreate) {
         const value = flowParser.resolveValue(a.value);
         fields.push([field, type, value]);
     }
+
     return {
         rows: [{ name: 'recordType', value: recordType }],
         fields,
     };
 }
 
-export function getRecordUpdateDetail(action: RecordUpdate) {
-    return { rows: [] };
+export function getRecordUpdateDetail(flowParser, action: RecordUpdate) {
+    const pmvs = toArray<ProcessMetadataValue>(action.processMetadataValues);
+    const record = pmvs.find(p => p.name === 'reference').value.stringValue;
+
+    const assignments = toArray(action.inputAssignments);
+    const fields = [];
+    for (const a of assignments) {
+        const field = a.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
+        const type = a.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
+        const value = flowParser.resolveValue(a.value);
+        fields.push([field, type, value]);
+    }
+
+    const explicitFilters = toArray(action.filters).filter(f => isExplicit(f));
+    const filters = [];
+    for (const f of explicitFilters) {
+        const field = f.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
+        const type = f.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
+        const value = flowParser.resolveValue(f.value);
+        filters.push([field, type, value]);
+    }
+
+    return {
+        rows: [{ name: 'record', value: record }],
+        fields,
+        filters,
+    };
+}
+
+function isExplicit(filter: RecordFilter) {
+    const pmvs = toArray<ProcessMetadataValue>(filter.processMetadataValues);
+    return pmvs.find(p => p.name === 'implicit').value.booleanValue === 'false';
 }
 
 export default { getActionCallDetail, getRecordCreateDetail, getRecordUpdateDetail };
