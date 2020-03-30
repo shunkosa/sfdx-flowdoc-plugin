@@ -1,4 +1,5 @@
 # Flowdoc (alpha)
+
 A Salesforce CLI plugin that generates design document from Lightning flow metadata
 
 [![Github Workflow](https://github.com/shunkosa/sfdx-flowdoc-plugin/workflows/unit%20test/badge.svg?branch=master)](https://github.com/shunkosa/sfdx-flowdoc-plugin/actions?query=workflow%3A%22unit%20test%22)
@@ -9,34 +10,60 @@ A Salesforce CLI plugin that generates design document from Lightning flow metad
 
 ![](img/screenshot.png)
 
+## Features
+
+### Supported Flow
+
+-   Trigger-based Process
+
+### Supported Actions
+
+-   Chatter Post
+-   Quick Action
+-   Apex (Invocable Action)
+-   Sub flow/process
+-   Record Create
+-   Record Update
+
+### Output Format
+
+-   PDF
+
 ## Setup
+
 ### Install as plugin
+
 ```
 sfdx plugins:install sfdx-flowdoc-plugin
 ```
 
 ### Install from source
+
 Clone this repo and run `npm install`. Then run,
+
 ```
 sfdx plugins:link .
 ```
 
 ## Usage
+
 Specify an API name of your process
+
 ```
 sfdx flowdoc:pdf:generate Example_Process
 ```
 
-Add `-l (--locale) ja ` option to export Japanese document.
+Add `-l (--locale) ja` option to export Japanese document.
+
 ```
 sfdx flowdoc:pdf:generate Example_Process -l ja
 ```
 
 ## Feedback
+
 Feature requests, bug reports and pull requests are welcome!
 
 ## Coming Soon
-* Process which subscribes platform event
-* Flow builder
-* Diagram
-* Editable output
+
+-   Diagram
+-   Editable output
