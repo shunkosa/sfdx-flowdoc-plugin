@@ -1,35 +1,32 @@
 import { th } from '../../style/text';
 
-export default class Overview {
+export default class StartCondition {
     flowParser;
 
     i18n;
 
-    object;
-
     constructor(flowParser, i18n) {
         this.flowParser = flowParser;
         this.i18n = i18n;
-        this.object = this.flowParser.getObjectType();
     }
 
-    createOverview() {
+    createContents(): Array<any> {
         const processType = this.flowParser.getProcessType();
         if (processType === 'Workflow') {
-            return this.renderWorklowOverview();
+            return this.renderWorkflowStartCondition();
         }
         if (processType === 'CustomEvent') {
-            return this.renderCustomEventOverview();
+            return this.renderCustomEventStartCondition();
         }
         return [];
     }
 
-    private renderWorklowOverview() {
+    private renderWorkflowStartCondition() {
         const triggerType =
             this.flowParser.getTriggerType() === 'onAllChanges'
                 ? this.i18n.__('WHEN_A_RECORD_IS_CREATED_OR_EDITED')
                 : this.i18n.__('ONLY_WHEN_A_RECORD_IS_CREATED');
-        return {
+        const triggerTable = {
             layout: 'lightHorizontalLines',
             table: {
                 widths: [200, 'auto'],
@@ -39,10 +36,11 @@ export default class Overview {
                 ],
             },
         };
+        return [triggerTable];
     }
 
-    private renderCustomEventOverview() {
-        return {
+    private renderCustomEventStartCondition() {
+        const triggerTable = {
             layout: 'lightHorizontalLines',
             table: {
                 widths: [200, 'auto'],
@@ -52,5 +50,6 @@ export default class Overview {
                 ],
             },
         };
+        return [triggerTable];
     }
 }

@@ -1,6 +1,6 @@
 import i18n from '../config/i18n';
+import StartCondition from './process/StartCondition';
 import Common from './process/Common';
-import Overview from './process/Overview';
 
 const styles = require('../style/style.json');
 
@@ -35,8 +35,11 @@ export default class Renderer {
 
         content.push({ text: this.i18n.__('THE_PROCESS_STARTS_WHEN'), margin: [0, 10, 0, 5] });
 
-        const processOverview = new Overview(this.flowParser, this.i18n);
-        content.push(processOverview.createOverview());
+        const sc = new StartCondition(this.flowParser, this.i18n);
+        const startConditionContents: Array<any> = sc.createContents();
+        for (const c of startConditionContents) {
+            content.push(c);
+        }
 
         const common = new Common(this.flowParser, this.i18n);
         content.push(common.createDecisionGroups());
