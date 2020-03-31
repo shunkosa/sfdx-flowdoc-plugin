@@ -2,8 +2,8 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import * as fs from 'fs-extra';
 import { Flow } from '../../../types/flow';
-import FlowParser from '../../../lib/flowParser';
-import Renderer from '../../../lib/renderer';
+import FlowParser from '../../../lib/FlowParser';
+import Renderer from '../../../lib/Renderer';
 import fonts from '../../../style/font';
 
 const Pdf = require('pdfmake');
