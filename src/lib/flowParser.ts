@@ -6,40 +6,41 @@ import {
     ActionCall,
     implementsActionCall,
     InputParamValue,
+    IteratableFlow,
 } from '../types/flow';
-import { RecordCreate, RecordUpdate, implementsRecordCreate, implementsRecordUpdate } from '../types/flowRecordAction';
+import {
+    RecordCreate,
+    RecordUpdate,
+    implementsRecordCreate,
+    implementsRecordUpdate,
+    RecordLookup,
+} from '../types/flowRecordAction';
 import { getActionCallDetail, getRecordCreateDetail, getRecordUpdateDetail } from './actionParser';
 import { toArray } from './arrayUtils';
 
 export default class FlowParser {
-    private readonly flow: Flow;
-
-    private readonly processMetadataValues;
-
-    private readonly decisions: Decision[];
-
-    private readonly actionCalls: ActionCall[];
-
-    private readonly recordCreates: RecordCreate[];
-
-    private readonly recordUpdates: RecordUpdate[];
-
-    private readonly formulas;
-
-    private readonly waits;
+    private readonly flow: IteratableFlow;
 
     constructor(flow: Flow) {
-        this.flow = flow;
+        this.flow = flow as IteratableFlow;
 
-        for (const arrayName of ['processMetadataValues', 'decisions', 'actionCalls', 'formulas', 'waits']) {
-            this[arrayName] = toArray(this.flow[arrayName]);
+        for (const arrayName of [
+            'processMetadataValues',
+            'decisions',
+            'actionCalls',
+            'recordLookups',
+            'formulas',
+            'waits',
+        ]) {
+            this.flow[arrayName] = toArray(flow[arrayName]);
         }
 
         const rawRecordUpdates = toArray(this.flow.recordUpdates);
-        this.recordUpdates =
+        this.flow.recordUpdates =
             rawRecordUpdates.length !== 0 ? rawRecordUpdates.map(a => ({ ...a, actionType: 'RECORD_UPDATE' })) : [];
+
         const rawRecordCreates = toArray(this.flow.recordCreates);
-        this.recordCreates =
+        this.flow.recordCreates =
             rawRecordCreates.length !== 0 ? rawRecordCreates.map(a => ({ ...a, actionType: 'RECORD_CREATE' })) : [];
     }
 
@@ -56,31 +57,39 @@ export default class FlowParser {
     }
 
     getEventType() {
-        return this.processMetadataValues.find(p => p.name === 'EventType').value.stringValue;
+        return this.flow.processMetadataValues.find(p => p.name === 'EventType').value.stringValue;
     }
 
     getObjectType() {
-        return this.processMetadataValues.find(p => p.name === 'ObjectType').value.stringValue;
+        return this.flow.processMetadataValues.find(p => p.name === 'ObjectType').value.stringValue;
     }
 
     getTriggerType() {
-        return this.processMetadataValues.find(p => p.name === 'TriggerType').value.stringValue;
+        return this.flow.processMetadataValues.find(p => p.name === 'TriggerType').value.stringValue;
+    }
+
+    getStartElement() {
+        return this.flow.startElementReference;
     }
 
     getDecision(name: string) {
-        return this.decisions.find(d => d.name === name);
+        return this.flow.decisions.find(d => d.name === name);
     }
 
     getAction(name: string): ActionCall | RecordUpdate | RecordCreate {
         return (
-            this.actionCalls.find(a => a.name === name) ||
-            this.recordCreates.find(a => a.name === name) ||
-            this.recordUpdates.find(a => a.name === name)
+            this.flow.actionCalls.find(a => a.name === name) ||
+            this.flow.recordCreates.find(a => a.name === name) ||
+            this.flow.recordUpdates.find(a => a.name === name)
         );
     }
 
+    getRecordLookup(name: string): RecordLookup {
+        return this.flow.recordLookups.find(r => r.name === name);
+    }
+
     getStandardDecisions(): Decision[] {
-        return this.decisions
+        return this.flow.decisions
             .filter(d => d.processMetadataValues !== undefined)
             .sort((d1, d2) => {
                 return (
@@ -108,7 +117,7 @@ export default class FlowParser {
     }
 
     hasAlwaysTrueFormula(name) {
-        return this.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
+        return this.flow.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
     }
 
     getActionSequence(actions, nextActionName) {
@@ -145,7 +154,7 @@ export default class FlowParser {
     };
 
     getScheduledActionSections(waitName) {
-        const wait = this.waits.find(a => a.name === waitName);
+        const wait = this.flow.waits.find(a => a.name === waitName);
         if (!wait) {
             return undefined;
         }
@@ -217,7 +226,7 @@ export default class FlowParser {
     };
 
     getFormulaExpression(name) {
-        const result = this.formulas.find(f => f.name === name);
+        const result = this.flow.formulas.find(f => f.name === name);
         return result.processMetadataValues.value.stringValue;
     }
 }

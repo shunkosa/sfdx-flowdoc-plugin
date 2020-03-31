@@ -1,4 +1,5 @@
 import { th } from '../../style/text';
+import { getRecordLookupFilter } from '../actionParser';
 
 export default class StartCondition {
     flowParser;
@@ -50,6 +51,32 @@ export default class StartCondition {
                 ],
             },
         };
-        return [triggerTable];
+
+        const matchTable = {
+            layout: 'lightHorizontalLines',
+            unbreakable: true,
+            table: {
+                headerRows: 1,
+                width: ['auto', 'auto', 100, 'auto', 'auto'],
+                body: [
+                    ['', this.i18n.__('FIELD'), this.i18n.__('OPERATOR'), this.i18n.__('TYPE'), this.i18n.__('VALUE')],
+                ],
+            },
+            margin: [15, 5, 0, 0],
+        };
+
+        const startElementName = this.flowParser.getStartElement();
+        const recordLookup = this.flowParser.getRecordLookup(startElementName);
+        const recordLookupFilters = getRecordLookupFilter(this.flowParser, recordLookup);
+
+        if (recordLookupFilters.length === 0) {
+            return [triggerTable];
+        }
+
+        recordLookupFilters.forEach((f, index) => {
+            matchTable.table.body.push([index + 1, ...f]);
+        });
+
+        return [triggerTable, matchTable];
     }
 }
