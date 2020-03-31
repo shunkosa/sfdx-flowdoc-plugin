@@ -1,5 +1,5 @@
 import { ProcessMetadataValue } from './processMetadataValue';
-import { RecordCreate, RecordUpdate } from './flowRecordAction';
+import { RecordCreate, RecordUpdate, RecordLookup } from './flowRecordAction';
 
 export interface Flow {
     processType: string;
@@ -13,10 +13,28 @@ export interface Flow {
     actionCalls?: ActionCall | ActionCall[];
     recordUpdates?: RecordUpdate | RecordUpdate[];
     recordCreates?: RecordCreate | RecordCreate[];
+    recordLookups?: RecordLookup | RecordLookup[];
+    waits: any;
+}
+
+export interface IteratableFlow {
+    processType: string;
+    label: string;
+    description: string;
+    startElementReference: string;
+    variables: Variable[];
+    processMetadataValues: ProcessMetadataValue[];
+    formulas: any;
+    decisions: Decision[];
+    actionCalls?: ActionCall[];
+    recordUpdates?: RecordUpdate[];
+    recordCreates?: RecordCreate[];
+    recordLookups?: RecordLookup[];
     waits: any;
 }
 
 interface Variable {
+    name: string;
     objectType: string;
 }
 

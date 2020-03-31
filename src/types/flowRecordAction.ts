@@ -30,6 +30,11 @@ export interface RecordUpdate extends Node {
     inputReference?: string;
 }
 
+export interface RecordLookup extends Node {
+    processMetadataValues?: any;
+    filters?: RecordFilter | RecordFilter[];
+}
+
 export interface RecordFilter {
     processMetadataValues: ProcessMetadataValue | ProcessMetadataValue[];
     value: ElementReferenceOrValue;

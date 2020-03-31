@@ -1,5 +1,5 @@
 import { ActionCall, InputParamValue } from '../types/flow';
-import { RecordCreate, RecordUpdate, RecordFilter } from '../types/flowRecordAction';
+import { RecordCreate, RecordUpdate, RecordFilter, RecordLookup } from '../types/flowRecordAction';
 import { toArray } from './arrayUtils';
 import { ProcessMetadataValue } from '../types/processMetadataValue';
 
@@ -115,4 +115,15 @@ function isExplicit(filter: RecordFilter) {
     return pmvs.find(p => p.name === 'implicit').value.booleanValue === 'false';
 }
 
-export default { getActionCallDetail, getRecordCreateDetail, getRecordUpdateDetail };
+export function getRecordLookupFilter(flowParser, action: RecordLookup) {
+    const explicitFilters = toArray(action.filters).filter(f => isExplicit(f));
+    const filters = [];
+    for (const f of explicitFilters) {
+        const field = f.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
+        const type = f.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
+        const operator = f.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
+        const value = flowParser.resolveValue(f.value);
+        filters.push([field, operator, type, value]);
+    }
+    return filters;
+}
