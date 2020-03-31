@@ -1,5 +1,6 @@
 {
     "OBJECT": "オブジェクト",
+    "PLATFORM_EVENT": "プラットフォームイベント",
     "THE_PROCESS_STARTS_WHEN": "プロセスを開始するタイミング",
     "WHEN_THE_PROCESS_STARTS": "プロセスを開始",
     "WHEN_A_RECORD_IS_CREATED_OR_EDITED": "レコードを作成したときのみ",

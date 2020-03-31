@@ -1,5 +1,6 @@
 {
     "OBJECT": "Object",
+    "PLATFORM_EVENT": "Platform Event",
     "THE_PROCESS_STARTS_WHEN": "The process starts when",
     "WHEN_THE_PROCESS_STARTS": "When the process starts",
     "WHEN_A_RECORD_IS_CREATED_OR_EDITED": "When a record is created or edited",
