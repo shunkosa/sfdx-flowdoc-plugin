@@ -17,9 +17,9 @@ export default class Common {
         for (let i = 0; i < decisions.length; i++) {
             content.push(h2(`${this.i18n.__('ACTION_GROUP')} ${i + 1}`));
             const criteria = this.flowParser.getActionExecutionCriteria(decisions[i]);
-            content.push(this.renderDecision(decisions[i], criteria));
+            content.push(this.createDecision(decisions[i], criteria));
             if (criteria === 'CONDITIONS_ARE_MET') {
-                content.push(this.renderDecisionConditions(decisions[i].rules.conditions));
+                content.push(this.createDecisionConditions(decisions[i].rules.conditions));
             }
 
             if (decisions[i].rules.connector) {
@@ -31,30 +31,9 @@ export default class Common {
                 content.push(h3(this.i18n.__('HEADER_ACTIONS')));
 
                 for (const action of actions) {
-                    const actionTables = this.renderAction(action);
-                    content.push(actionTables[0]);
-                    if (actionTables.length > 1) {
-                        if (action.actionType === 'RECORD_UPDATE') {
-                            const filterHeader = this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_FILTER_HEADER');
-                            const filterCondition =
-                                actionTables.length === 3
-                                    ? this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_HAS_CRITERIA')
-                                    : this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_NO_CRITERIA');
-                            content.push({
-                                text: `${filterHeader} : ${filterCondition}`,
-                                margin: [15, 0, 0, 10],
-                            });
-                        }
-                        if (actionTables.length === 3) {
-                            content.push(actionTables[2]);
-                        }
-                        if (action.actionType.includes('RECORD_')) {
-                            content.push({
-                                text: this.i18n.__(`ACTION_DETAIL_${action.actionType}_FIELD_HEADER`),
-                                margin: [15, 0, 0, 10],
-                            });
-                        }
-                        content.push(actionTables[1]);
+                    const actionContents = this.createActionContents(action);
+                    for (const c of actionContents) {
+                        content.push(c);
                     }
                 }
                 const lastAction = actions.slice(-1)[0];
@@ -66,9 +45,12 @@ export default class Common {
                     if (scheduledActionSections && scheduledActionSections.length > 0) {
                         content.push(h3(this.i18n.__('HEADER_SCHEDULED_ACTIONS')));
                         for (const section of scheduledActionSections) {
-                            content.push(this.renderScheduledActionSummary(section.wait));
+                            content.push(this.createScheduledActionSummary(section.wait));
                             for (const action of section.actions) {
-                                content.push(this.renderAction(action));
+                                const actionContents = this.createActionContents(action);
+                                for (const c of actionContents) {
+                                    content.push(c);
+                                }
                             }
                         }
                     }
@@ -86,7 +68,7 @@ export default class Common {
         return content;
     }
 
-    renderDecision(decision, criteria) {
+    createDecision(decision, criteria) {
         const table = {
             unbreakable: true,
             table: {
@@ -107,7 +89,7 @@ export default class Common {
         return table;
     }
 
-    renderDecisionConditions = rawConditions => {
+    createDecisionConditions = rawConditions => {
         const conditions = Array.isArray(rawConditions) ? rawConditions : [rawConditions];
         const conditionTable = {
             layout: 'lightHorizontalLines',
@@ -134,7 +116,7 @@ export default class Common {
         return conditionTable;
     };
 
-    renderAction = action => {
+    createActionTables = action => {
         const actionTable = {
             unbreakable: true,
             table: {
@@ -151,7 +133,7 @@ export default class Common {
         }
 
         if (!actionDetail.fields || actionDetail.fields.length === 0) {
-            return [actionTable];
+            return { actionTable };
         }
 
         const paramTable = {
@@ -167,7 +149,7 @@ export default class Common {
         });
 
         if (!actionDetail.filters || actionDetail.filters.length === 0) {
-            return [actionTable, paramTable];
+            return { actionTable, paramTable };
         }
 
         const filterTable = {
@@ -182,10 +164,10 @@ export default class Common {
             filterTable.table.body.push([index + 1, ...f]);
         });
 
-        return [actionTable, paramTable, filterTable];
+        return { actionTable, paramTable, filterTable };
     };
 
-    renderScheduledActionSummary = (summary: WaitEventSummary) => {
+    createScheduledActionSummary = (summary: WaitEventSummary) => {
         const direction = this.i18n.__(summary.isAfter ? 'AFTER' : 'BEFORE');
         const compareTo = summary.field ? summary.field : this.i18n.__('NOW');
         const unit = this.i18n.__(summary.unit.toUpperCase());
@@ -194,4 +176,33 @@ export default class Common {
             margin: [0, 5],
         };
     };
+
+    createActionContents(action) {
+        const contents = [];
+        const actionTables = this.createActionTables(action);
+        contents.push(actionTables.actionTable);
+        if (actionTables.paramTable) {
+            if (action.actionType === 'RECORD_UPDATE') {
+                const filterHeader = this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_FILTER_HEADER');
+                const filterCondition = actionTables.filterTable
+                    ? this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_HAS_CRITERIA')
+                    : this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_NO_CRITERIA');
+                contents.push({
+                    text: `${filterHeader} : ${filterCondition}`,
+                    margin: [15, 0, 0, 10],
+                });
+            }
+            if (actionTables.filterTable) {
+                contents.push(actionTables.filterTable);
+            }
+            if (action.actionType.includes('RECORD_')) {
+                contents.push({
+                    text: this.i18n.__(`ACTION_DETAIL_${action.actionType}_FIELD_HEADER`),
+                    margin: [15, 0, 0, 10],
+                });
+            }
+            contents.push(actionTables.paramTable);
+        }
+        return contents;
+    }
 }
