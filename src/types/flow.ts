@@ -34,6 +34,7 @@ export interface IteratableFlow {
 }
 
 interface Variable {
+    name: string;
     objectType: string;
 }
 
