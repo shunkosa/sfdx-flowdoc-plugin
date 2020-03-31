@@ -1,3 +1,9 @@
+# 0.1.0 - March 31, 2020
+
+## Added
+
+-   Add Platform Event based process
+
 # 0.0.11 - March 31, 2020
 
 ## Added
