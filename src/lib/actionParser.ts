@@ -1,4 +1,4 @@
-import { ActionCall } from '../types/flow';
+import { ActionCall, InputParamValue } from '../types/flow';
 import { RecordCreate, RecordUpdate, RecordFilter } from '../types/flowRecordAction';
 import { toArray } from './arrayUtils';
 import { ProcessMetadataValue } from '../types/processMetadataValue';
@@ -39,9 +39,11 @@ export function getActionCallDetail(flowParser, action: ActionCall) {
         });
     }
     for (const param of toArray(targetLayout.structure.params)) {
+        const inputParamValue: InputParamValue = {};
+        inputParamValue[param.type] = actionInputs.find(i => i.name === param.name).value[param.type];
         rows.push({
             name: param.name,
-            value: actionInputs.find(i => i.name === param.name).value[param.type],
+            value: flowParser.resolveValue(inputParamValue),
         });
     }
 
