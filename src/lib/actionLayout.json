@@ -132,5 +132,152 @@
                 "hasFields": true
             }
         }
+    ],
+    "submit": [
+        {
+            "key": [
+                {
+                    "type": "processMetadataValues",
+                    "name": "selectionType",
+                    "valueType": "stringValue",
+                    "value": "firstFound"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "submitterType",
+                    "valueType": "stringValue",
+                    "value": "currentUser"
+                }
+            ],
+            "structure": {
+                "metadata": [{ "name": "submitterType", "type": "stringValue" }],
+                "params": [{ "name": "comment", "type": "stringValue" }],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "processMetadataValues",
+                    "name": "selectionType",
+                    "valueType": "stringValue",
+                    "value": "firstFound"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "submitterType",
+                    "valueType": "stringValue",
+                    "value": "reference"
+                }
+            ],
+            "structure": {
+                "metadata": [],
+                "params": [
+                    { "name": "submitterId", "type": "elementReference" },
+                    { "name": "comment", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "processMetadataValues",
+                    "name": "selectionType",
+                    "valueType": "stringValue",
+                    "value": "firstFound"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "submitterType",
+                    "valueType": "stringValue",
+                    "value": "user"
+                }
+            ],
+            "structure": {
+                "metadata": [{ "name": "submitterSelection", "type": "stringValue" }],
+                "params": [{ "name": "comment", "type": "stringValue" }],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "processMetadataValues",
+                    "name": "selectionType",
+                    "valueType": "stringValue",
+                    "value": "selectedProcess"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "submitterType",
+                    "valueType": "stringValue",
+                    "value": "currentUser"
+                }
+            ],
+            "structure": {
+                "metadata": [
+                    { "name": "processSelection", "type": "stringValue" },
+                    { "name": "submitterType", "type": "stringValue" }
+                ],
+                "params": [
+                    { "name": "skipEntryCriteria", "type": "booleanValue" },
+                    { "name": "comment", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "processMetadataValues",
+                    "name": "selectionType",
+                    "valueType": "stringValue",
+                    "value": "selectedProcess"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "submitterType",
+                    "valueType": "stringValue",
+                    "value": "reference"
+                }
+            ],
+            "structure": {
+                "metadata": [{ "name": "processSelection", "type": "stringValue" }],
+                "params": [
+                    { "name": "skipEntryCriteria", "type": "booleanValue" },
+                    { "name": "submitterId", "type": "elementReference" },
+                    { "name": "comment", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        },
+        {
+            "key": [
+                {
+                    "type": "processMetadataValues",
+                    "name": "selectionType",
+                    "valueType": "stringValue",
+                    "value": "selectedProcess"
+                },
+                {
+                    "type": "processMetadataValues",
+                    "name": "submitterType",
+                    "valueType": "stringValue",
+                    "value": "user"
+                }
+            ],
+            "structure": {
+                "metadata": [
+                    { "name": "processSelection", "type": "stringValue" },
+                    { "name": "submitterSelection", "type": "stringValue" }
+                ],
+                "params": [
+                    { "name": "skipEntryCriteria", "type": "booleanValue" },
+                    { "name": "comment", "type": "stringValue" }
+                ],
+                "hasFields": false
+            }
+        }
     ]
 }

@@ -24,6 +24,7 @@ A Salesforce CLI plugin that generates design document from Lightning flow metad
 -   Sub flow/process
 -   Record Create
 -   Record Update
+-   Approval Process
 
 ### Output Format
 
