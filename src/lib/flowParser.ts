@@ -55,6 +55,10 @@ export default class FlowParser {
         return this.flow.label;
     }
 
+    getEventType() {
+        return this.processMetadataValues.find(p => p.name === 'EventType').value.stringValue;
+    }
+
     getObjectType() {
         return this.processMetadataValues.find(p => p.name === 'ObjectType').value.stringValue;
     }
