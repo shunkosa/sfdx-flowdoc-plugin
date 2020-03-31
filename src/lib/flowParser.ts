@@ -207,10 +207,7 @@ export default class FlowParser {
         }
         // String
         if (typeof value === 'string') {
-            if (value.includes('myVariable_current')) {
-                return value.replace('myVariable_current', `[${this.getObjectType()}]`);
-            }
-            return value;
+            return this.replaceVariableNameToObjectName(value);
         }
         // Object
         const key = Object.keys(value)[0]; // stringValue or elementReference
@@ -218,15 +215,27 @@ export default class FlowParser {
             if (!value[key].includes('.')) {
                 return this.getFormulaExpression(value[key]);
             }
-            if (value[key].includes('myVariable_current')) {
-                return value[key].replace('myVariable_current', `[${this.getObjectType()}]`);
-            }
+            return this.replaceVariableNameToObjectName(value[key]);
         }
         return value[key];
     };
 
     getFormulaExpression(name) {
-        const result = this.flow.formulas.find(f => f.name === name);
-        return result.processMetadataValues.value.stringValue;
+        const formula = this.flow.formulas.find(f => f.name === name);
+        return formula.processMetadataValues.value.stringValue;
+    }
+
+    getObjectVariable(name) {
+        const variable = this.flow.variables.find(v => v.name === name);
+        return variable.objectType;
+    }
+
+    replaceVariableNameToObjectName(string) {
+        if (!string.includes('.')) {
+            return string;
+        }
+        const variableName = string.split('.')[0];
+        const objectName = this.getObjectVariable(variableName);
+        return string.replace(variableName, `[${objectName}]`);
     }
 }
