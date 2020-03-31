@@ -44,7 +44,11 @@ export default class FlowParser {
     }
 
     isSupportedFlow() {
-        return ['Workflow'].includes(this.flow.processType);
+        return ['Workflow', 'CustomEvent'].includes(this.flow.processType);
+    }
+
+    getProcessType() {
+        return this.flow.processType;
     }
 
     getLabel() {
