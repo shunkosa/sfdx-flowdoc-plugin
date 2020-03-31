@@ -17,10 +17,10 @@ export function getActionCallDetail(flowParser, action: ActionCall) {
     } else {
         for (const l of actionLayout) {
             const keys = l.key;
-            let isMatched = false;
+            let isMatched = true;
             for (const k of keys) {
                 const param = action[k.type].find(p => p.name === k.name);
-                isMatched = param && param.value ? param.value[k.valueType] === k.value : false;
+                isMatched = isMatched && (param && param.value ? param.value[k.valueType] === k.value : false);
             }
             if (isMatched) {
                 targetLayout = l;
@@ -32,6 +32,7 @@ export function getActionCallDetail(flowParser, action: ActionCall) {
     const actionInputs = toArray(action.inputParameters);
 
     const rows = [];
+
     for (const m of toArray(targetLayout.structure.metadata)) {
         rows.push({
             name: m.name,
@@ -40,7 +41,8 @@ export function getActionCallDetail(flowParser, action: ActionCall) {
     }
     for (const param of toArray(targetLayout.structure.params)) {
         const inputParamValue: InputParamValue = {};
-        inputParamValue[param.type] = actionInputs.find(i => i.name === param.name).value[param.type];
+        const inputParam = actionInputs.find(i => i.name === param.name);
+        inputParamValue[param.type] = inputParam.value ? inputParam.value[param.type] : '';
         rows.push({
             name: param.name,
             value: flowParser.resolveValue(inputParamValue),
