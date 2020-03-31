@@ -209,11 +209,9 @@ export default class Renderer {
             unbreakable: true,
             layout: 'lightHorizontalLines',
             table: {
-                body: [
-                    ['', this.th(this.i18n.__('FIELD')), this.th(this.i18n.__('TYPE')), this.th(this.i18n.__('VALUE'))],
-                ],
+                body: [['', this.i18n.__('FIELD'), this.i18n.__('TYPE'), this.i18n.__('VALUE')]],
             },
-            margin: [15, 0, 0, 10],
+            margin: [15, 0, 0, 15],
         };
         actionDetail.fields.forEach((f, index) => {
             paramTable.table.body.push([index + 1, ...f]);
@@ -227,11 +225,9 @@ export default class Renderer {
             unbreakable: true,
             layout: 'lightHorizontalLines',
             table: {
-                body: [
-                    ['', this.th(this.i18n.__('FIELD')), this.th(this.i18n.__('TYPE')), this.th(this.i18n.__('VALUE'))],
-                ],
+                body: [['', this.i18n.__('FIELD'), this.i18n.__('TYPE'), this.i18n.__('VALUE')]],
             },
-            margin: [15, 0, 0, 10],
+            margin: [15, 0, 0, 15],
         };
         actionDetail.filters.forEach((f, index) => {
             filterTable.table.body.push([index + 1, ...f]);
