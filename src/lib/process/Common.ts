@@ -128,7 +128,7 @@ export default class Common {
                 leftValue,
                 c.operator,
                 Object.keys(c.rightValue)[0],
-                Object.values(c.rightValue)[0],
+                this.flowParser.resolveValue(c.rightValue),
             ]);
         });
         return conditionTable;
