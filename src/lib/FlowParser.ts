@@ -16,7 +16,7 @@ import {
     RecordLookup,
 } from '../types/flowRecordAction';
 import { getActionCallDetail, getRecordCreateDetail, getRecordUpdateDetail } from './actionParser';
-import { toArray } from './arrayUtils';
+import { toArray } from './util/arrayUtils';
 
 export default class FlowParser {
     private readonly flow: IteratableFlow;
@@ -205,7 +205,7 @@ export default class FlowParser {
         return this.getActionSequence([], nextReference);
     }
 
-    resolveValue = (value: string | InputParamValue) => {
+    resolveValue = (value: string | InputParamValue | ProcessMetadataValue) => {
         if (!value) {
             return '$GlobalConstant.null';
         }

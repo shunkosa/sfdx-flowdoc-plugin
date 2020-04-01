@@ -1,6 +1,6 @@
 import { ActionCall, InputParamValue } from '../types/flow';
 import { RecordCreate, RecordUpdate, RecordFilter, RecordLookup } from '../types/flowRecordAction';
-import { toArray } from './arrayUtils';
+import { toArray } from './util/arrayUtils';
 import { ProcessMetadataValue } from '../types/processMetadataValue';
 
 const layout = require('./actionLayout.json');
