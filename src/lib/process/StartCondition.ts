@@ -13,16 +13,21 @@ export default class StartCondition {
 
     createContents(): Array<any> {
         const processType = this.flowParser.getProcessType();
-        if (processType === 'Workflow') {
-            return this.renderWorkflowStartCondition();
+        switch (processType) {
+            case 'Workflow':
+                return this.createWorkflowStartCondition();
+            case 'CustomEvent':
+                return this.createCustomEventStartCondition();
+            case 'InvocableProcess':
+                return this.createInvocableStartCondition();
+            default:
+                return [];
         }
-        if (processType === 'CustomEvent') {
-            return this.renderCustomEventStartCondition();
-        }
-        return [];
     }
 
-    private renderWorkflowStartCondition() {
+    private createWorkflowStartCondition() {
+        const text = { text: this.i18n.__('THE_PROCESS_STARTS_WHEN'), margin: [0, 10, 0, 5] };
+
         const triggerType =
             this.flowParser.getTriggerType() === 'onAllChanges'
                 ? this.i18n.__('WHEN_A_RECORD_IS_CREATED_OR_EDITED')
@@ -37,10 +42,12 @@ export default class StartCondition {
                 ],
             },
         };
-        return [triggerTable];
+        return [text, triggerTable];
     }
 
-    private renderCustomEventStartCondition() {
+    private createCustomEventStartCondition() {
+        const text = { text: this.i18n.__('THE_PROCESS_STARTS_PLATFORM_EVENT'), margin: [0, 10, 0, 5] };
+
         const triggerTable = {
             layout: 'lightHorizontalLines',
             table: {
@@ -70,13 +77,29 @@ export default class StartCondition {
         const recordLookupFilters = getRecordLookupFilter(this.flowParser, recordLookup);
 
         if (recordLookupFilters.length === 0) {
-            return [triggerTable];
+            return [text, triggerTable];
         }
+
+        const matchText = { text: this.i18n.__('MATCHING_CONDITIONS'), margin: [0, 10, 0, 5] };
 
         recordLookupFilters.forEach((f, index) => {
             matchTable.table.body.push([index + 1, ...f]);
         });
 
-        return [triggerTable, matchTable];
+        return [text, triggerTable, matchText, matchTable];
+    }
+
+    private createInvocableStartCondition() {
+        const text = { text: this.i18n.__('THE_PROCESS_STARTS_INVOCABLE'), margin: [0, 10, 0, 5] };
+
+        const objectTable = {
+            layout: 'lightHorizontalLines',
+            table: {
+                widths: [200, 'auto'],
+                body: [[th(this.i18n.__('OBJECT')), this.flowParser.getObjectType()]],
+            },
+        };
+
+        return [text, objectTable];
     }
 }

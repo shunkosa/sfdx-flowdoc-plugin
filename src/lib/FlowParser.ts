@@ -45,7 +45,7 @@ export default class FlowParser {
     }
 
     isSupportedFlow() {
-        return ['Workflow', 'CustomEvent'].includes(this.flow.processType);
+        return ['Workflow', 'CustomEvent', 'InvocableProcess'].includes(this.flow.processType);
     }
 
     getProcessType() {
@@ -54,6 +54,10 @@ export default class FlowParser {
 
     getLabel() {
         return this.flow.label;
+    }
+
+    getDescription() {
+        return this.flow.description ? this.flow.description : '';
     }
 
     getEventType() {

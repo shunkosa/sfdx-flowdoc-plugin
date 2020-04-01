@@ -32,8 +32,7 @@ export default class Renderer {
 
         content.push({ text: this.flowParser.getLabel(), style: 'h1' });
         content.push({ text: this.name });
-
-        content.push({ text: this.i18n.__('THE_PROCESS_STARTS_WHEN'), margin: [0, 10, 0, 5] });
+        content.push({ text: this.flowParser.getDescription(), margin: [0, 5] });
 
         const sc = new StartCondition(this.flowParser, this.i18n);
         const startConditionContents: Array<any> = sc.createContents();
