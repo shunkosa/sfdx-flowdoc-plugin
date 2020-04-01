@@ -1,7 +1,7 @@
 import { th, h2, h3 } from '../../style/text';
 import { WaitEventSummary } from '../../types/flow';
 
-export default class Common {
+export default class Main {
     flowParser;
 
     i18n;
