@@ -1,6 +1,6 @@
 import i18n from '../config/i18n';
 import StartCondition from './process/StartCondition';
-import Common from './process/Common';
+import Main from './process/Main';
 
 const styles = require('../style/style.json');
 
@@ -41,8 +41,8 @@ export default class Renderer {
             content.push(c);
         }
 
-        const common = new Common(this.flowParser, this.i18n);
-        content.push(common.createDecisionGroups());
+        const m = new Main(this.flowParser, this.i18n);
+        content.push(m.createDecisionGroups());
 
         return content;
     }
