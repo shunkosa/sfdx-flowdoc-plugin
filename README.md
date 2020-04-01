@@ -14,8 +14,9 @@ A Salesforce CLI plugin that generates design document from Lightning flow metad
 
 ### Supported Flow
 
--   Trigger-based Process
--   Platform Event-based Process
+-   Trigger based Process
+-   Platform Event based Process
+-   Invocable Process
 
 ### Supported Actions
 
