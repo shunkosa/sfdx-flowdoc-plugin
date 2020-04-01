@@ -1,5 +1,5 @@
 import testFlow from './testFlow.json';
-import FlowParser from '../../src/lib/flowParser';
+import FlowParser from '../../src/lib/FlowParser';
 import { Flow } from '../../src/types/flow';
 
 describe('lib/flowParser', () => {
