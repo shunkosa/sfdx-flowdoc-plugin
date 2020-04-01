@@ -17,6 +17,8 @@ import {
 } from '../types/flowRecordAction';
 import { getActionCallDetail, getRecordCreateDetail, getRecordUpdateDetail } from './actionParser';
 import { toArray } from './util/arrayUtils';
+import { implementsProcessMetadataValue, ProcessMetadataValue } from '../types/processMetadataValue';
+import { unescapeHtml } from './util/stringUtils';
 
 export default class FlowParser {
     private readonly flow: IteratableFlow;
@@ -208,6 +210,14 @@ export default class FlowParser {
     resolveValue = (value: string | InputParamValue | ProcessMetadataValue) => {
         if (!value) {
             return '$GlobalConstant.null';
+        }
+        // Chatter Message
+        if (implementsProcessMetadataValue(value)) {
+            if (value.name === 'textJson') {
+                return JSON.parse(unescapeHtml(value.value.stringValue)).message;
+            }
+            const key = Object.keys(value.value)[0];
+            return value.value[key];
         }
         // String
         if (typeof value === 'string') {

@@ -66,7 +66,7 @@
     "ACTION_DETAIL_chatterPost_subjectNameOrId": "Post to",
     "ACTION_DETAIL_chatterPost_postTarget": "Post to",
     "ACTION_DETAIL_chatterPost_type": "Post to (type)",
-    "ACTION_DETAIL_chatterPost_text": "Message",
+    "ACTION_DETAIL_chatterPost_textJson": "Message",
     "ACTION_DETAIL_emailAlert_emailAlertSelection": "Email Alert",
     "ACTION_DETAIL_quickAction_filterType": "Type",
     "ACTION_DETAIL_quickAction_quickActionSelectionType": "Object",

@@ -20,11 +20,8 @@
                 }
             ],
             "structure": {
-                "metadata": [],
-                "params": [
-                    { "name": "subjectNameOrId", "type": "elementReference" },
-                    { "name": "text", "type": "stringValue" }
-                ],
+                "metadata": [{ "name": "textJson", "type": "stringValue" }],
+                "params": [{ "name": "subjectNameOrId", "type": "elementReference" }],
                 "hasFields": false
             }
         },
@@ -38,11 +35,11 @@
                 }
             ],
             "structure": {
-                "metadata": [{ "name": "postTarget", "type": "stringValue" }],
-                "params": [
-                    { "name": "type", "type": "stringValue" },
-                    { "name": "text", "type": "stringValue" }
+                "metadata": [
+                    { "name": "textJson", "type": "stringValue" },
+                    { "name": "postTarget", "type": "stringValue" }
                 ],
+                "params": [{ "name": "type", "type": "stringValue" }],
                 "hasFields": false
             }
         },
@@ -62,11 +59,10 @@
                 }
             ],
             "structure": {
-                "metadata": [],
+                "metadata": [{ "name": "textJson", "type": "stringValue" }],
                 "params": [
                     { "name": "type", "type": "stringValue" },
-                    { "name": "subjectNameOrId", "type": "elementReference" },
-                    { "name": "text", "type": "stringValue" }
+                    { "name": "subjectNameOrId", "type": "elementReference" }
                 ],
                 "hasFields": false
             }
@@ -87,11 +83,11 @@
                 }
             ],
             "structure": {
-                "metadata": [{ "name": "postTarget", "type": "stringValue" }],
-                "params": [
-                    { "name": "type", "type": "stringValue" },
-                    { "name": "text", "type": "stringValue" }
+                "metadata": [
+                    { "name": "textJson", "type": "stringValue" },
+                    { "name": "postTarget", "type": "stringValue" }
                 ],
+                "params": [{ "name": "type", "type": "stringValue" }],
                 "hasFields": false
             }
         }

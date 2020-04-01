@@ -36,7 +36,7 @@ export function getActionCallDetail(flowParser, action: ActionCall) {
     for (const m of toArray(targetLayout.structure.metadata)) {
         rows.push({
             name: m.name,
-            value: actionPmvs.find(pmv => pmv.name === m.name).value[m.type],
+            value: flowParser.resolveValue(actionPmvs.find(pmv => pmv.name === m.name)),
         });
     }
     for (const param of toArray(targetLayout.structure.params)) {
