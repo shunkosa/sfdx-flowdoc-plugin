@@ -1,4 +1,4 @@
-import { toArray } from '../../src/lib/arrayUtils';
+import { toArray } from '../../src/lib/util/arrayUtils';
 
 describe('lib/arrayUtils', () => {
     it('toArray()', () => {
