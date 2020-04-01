@@ -1,3 +1,14 @@
+# 0.2.0 - March 31, 2020
+
+## Added
+
+-   Add Invocable process
+-   Add process description
+
+### Fixed
+
+-   Replace variable `myVariable_current` to object name in chatter action message [(Issue #2)](https://github.com/shunkosa/sfdx-flowdoc-plugin/issues/2)
+
 # 0.1.0 - March 31, 2020
 
 ## Added
