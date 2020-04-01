@@ -1,6 +1,6 @@
 export interface ProcessMetadataValue {
     name: string;
-    value: ElementReferenceOrValue;
+    value?: ElementReferenceOrValue;
 }
 
 export type ElementReferenceOrValue = RequireOne<{
@@ -9,6 +9,19 @@ export type ElementReferenceOrValue = RequireOne<{
     booleanValue?: string;
     elementReference?: string;
 }>;
+
+export function implementsProcessMetadataValue(arg: any): arg is ProcessMetadataValue {
+    return arg.name !== undefined && (arg.value === undefined || implementsElementReferenceOrValue(arg.value));
+}
+
+function implementsElementReferenceOrValue(arg: any): arg is ElementReferenceOrValue {
+    return (
+        arg.stringValue !== undefined ||
+        arg.numberValue !== undefined ||
+        arg.booleanValue !== undefined ||
+        arg.elementReference !== undefined
+    );
+}
 
 type RequireOne<T, K extends keyof T = keyof T> = K extends keyof T ? PartialRequire<T, K> : never;
 
