@@ -1,5 +1,6 @@
 import { th, h2, h3 } from '../../style/text';
 import { WaitEventSummary } from '../../types/flow';
+import { toArray } from '../util/arrayUtils';
 
 export default class Main {
     flowParser;
@@ -90,7 +91,7 @@ export default class Main {
     }
 
     createDecisionConditions = rawConditions => {
-        const conditions = Array.isArray(rawConditions) ? rawConditions : [rawConditions];
+        const conditions = toArray(rawConditions);
         const conditionTable = {
             layout: 'lightHorizontalLines',
             unbreakable: true,
@@ -105,11 +106,12 @@ export default class Main {
         };
         conditions.forEach((c, index) => {
             const leftValue = this.flowParser.resolveValue(c.leftValueReference);
+            const isChanged = leftValue.startsWith('isChanged'); // TODO: This is fragile implementation
             conditionTable.table.body.push([
                 index + 1,
-                leftValue,
-                c.operator,
-                Object.keys(c.rightValue)[0],
+                isChanged ? this.flowParser.getIsChangedTargetField(leftValue) : leftValue,
+                isChanged ? this.i18n.__('ISCHANGED') : c.operator,
+                this.flowParser.getConditionType(c),
                 this.flowParser.resolveValue(c.rightValue),
             ]);
         });

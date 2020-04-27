@@ -19,6 +19,7 @@
     "CONDITIONS": "Conditions",
     "FIELD": "Field",
     "OPERATOR": "Operator",
+    "ISCHANGED": "Is changed",
     "TYPE": "Type",
     "VALUE": "Value",
     "AFTER_THIS_CRITERIA": "What Happens After Evaluating This Criteria",

@@ -116,6 +116,9 @@ export default class FlowParser {
                 if (this.hasAlwaysTrueFormula(condition.leftValueReference)) {
                     return 'NO_CRITERIA';
                 }
+                if (this.hasIsChangedCondition(condition.leftValueReference)) {
+                    return 'CONDITIONS_ARE_MET';
+                }
                 return 'FORMULA_EVALUATES_TO_TRUE';
             }
         }
@@ -124,6 +127,16 @@ export default class FlowParser {
 
     hasAlwaysTrueFormula(name) {
         return this.flow.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
+    }
+
+    hasIsChangedCondition(name) {
+        return this.flow.decisions.some(d => d.rules && !Array.isArray(d.rules) && d.rules.name === name);
+    }
+
+    getIsChangedTargetField(name) {
+        const rule = this.flow.decisions.find(d => d.rules && !Array.isArray(d.rules) && d.rules.name === name).rules;
+        const targetCondition = rule.conditions.find(c => c.rightValue.elementReference !== undefined);
+        return this.resolveValue(targetCondition.rightValue);
     }
 
     getActionSequence(actions, nextActionName) {
@@ -232,6 +245,10 @@ export default class FlowParser {
             return this.replaceVariableNameToObjectName(value[key]);
         }
         return value[key];
+    };
+
+    getConditionType = condition => {
+        return condition.processMetadataValues.find(p => p.name === 'rightHandSideType').value.stringValue;
     };
 
     getFormulaExpression(name) {

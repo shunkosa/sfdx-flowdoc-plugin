@@ -19,6 +19,7 @@
     "CONDITIONS": "条件",
     "FIELD": "項目",
     "OPERATOR": "演算子",
+    "ISCHANGED": "変更済み",
     "TYPE": "種別",
     "VALUE": "値",
     "AFTER_THIS_CRITERIA": "この条件を評価した後の操作",
