@@ -1,3 +1,8 @@
+# 0.3.0 - April 27, 2020
+
+-   Update 'type' in conditions in decision
+-   Support 'is changed' operator [(Issue #3)](https://github.com/shunkosa/sfdx-flowdoc-plugin/issues/3)
+
 # 0.2.0 - March 31, 2020
 
 ## Added
