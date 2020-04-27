@@ -12,7 +12,7 @@ A clear and concise description of what the bug is.
 
 **Process/Flow metadata**
 If possible, attach the flow/process metadata XML file.
-You can retrieve metadata by running `sfdx force:source:retrieve-m Flow:YOUR_PROCESS_API_NAME`
+You can retrieve metadata by running `sfdx force:source:retrieve -m Flow:YOUR_PROCESS_API_NAME`
 
 **Environment**
  - OS: [e.g. macOS]
