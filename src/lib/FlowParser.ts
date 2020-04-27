@@ -247,6 +247,10 @@ export default class FlowParser {
         return value[key];
     };
 
+    getConditionType = condition => {
+        return condition.processMetadataValues.find(p => p.name === 'rightHandSideType').value.stringValue;
+    };
+
     getFormulaExpression(name) {
         const formula = this.flow.formulas.find(f => f.name === name);
         return formula.processMetadataValues.value.stringValue;

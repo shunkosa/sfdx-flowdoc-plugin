@@ -111,7 +111,7 @@ export default class Main {
                 index + 1,
                 isChanged ? this.flowParser.getIsChangedTargetField(leftValue) : leftValue,
                 isChanged ? this.i18n.__('ISCHANGED') : c.operator,
-                Object.keys(c.rightValue)[0],
+                this.flowParser.getConditionType(c),
                 this.flowParser.resolveValue(c.rightValue),
             ]);
         });
