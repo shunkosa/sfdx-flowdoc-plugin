@@ -3,8 +3,8 @@ import { Messages, SfdxError } from '@salesforce/core';
 import * as fs from 'fs-extra';
 import { Flow } from '../../../types/flow';
 import FlowParser from '../../../lib/FlowParser';
-import Renderer from '../../../lib/Renderer';
 import fonts from '../../../style/font';
+import buildPdfContent from '../../../lib/pdf/pdfBuilder';
 
 const Pdf = require('pdfmake');
 
@@ -47,13 +47,13 @@ export default class Generate extends SfdxCommand {
         if (Object.keys(flow).length === 0) {
             throw new SfdxError(messages.getMessage('errorFlowNotFound'));
         }
-        const fp = new FlowParser((flow as unknown) as Flow);
-        if (!fp.isSupportedFlow) {
+        const fp = new FlowParser((flow as unknown) as Flow, this.args.file);
+        if (!fp.isSupportedFlow()) {
             throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
         }
-        const r = new Renderer(fp, this.flags.locale, this.args.file);
 
-        const docDefinition = r.createDocDefinition();
+        const hrDoc = fp.createReadableProcess();
+        const docDefinition = buildPdfContent(hrDoc, this.flags.locale);
 
         const printer = new Pdf(fonts);
         const pdfDoc = printer.createPdfKitDocument(docDefinition);

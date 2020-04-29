@@ -1,19 +1,18 @@
-import { th } from '../../style/text';
-import { getRecordLookupFilter } from '../actionParser';
+import { th } from '../../../style/text';
+import { ReadableProcess } from '../../../types/parser';
 
-export default class StartCondition {
-    flowParser;
+export default class StartConditionFormatter {
+    flow: ReadableProcess;
 
     i18n;
 
-    constructor(flowParser, i18n) {
-        this.flowParser = flowParser;
+    constructor(flow, i18n) {
+        this.flow = flow;
         this.i18n = i18n;
     }
 
-    createContents(): Array<any> {
-        const processType = this.flowParser.getProcessType();
-        switch (processType) {
+    buildContents(): Array<any> {
+        switch (this.flow.processType) {
             case 'Workflow':
                 return this.createWorkflowStartCondition();
             case 'CustomEvent':
@@ -29,7 +28,7 @@ export default class StartCondition {
         const text = { text: this.i18n.__('THE_PROCESS_STARTS_WHEN'), margin: [0, 10, 0, 5] };
 
         const triggerType =
-            this.flowParser.getTriggerType() === 'onAllChanges'
+            this.flow.triggerType === 'onAllChanges'
                 ? this.i18n.__('WHEN_A_RECORD_IS_CREATED_OR_EDITED')
                 : this.i18n.__('ONLY_WHEN_A_RECORD_IS_CREATED');
         const triggerTable = {
@@ -37,7 +36,7 @@ export default class StartCondition {
             table: {
                 widths: [200, 'auto'],
                 body: [
-                    [th(this.i18n.__('OBJECT')), this.flowParser.getObjectType()],
+                    [th(this.i18n.__('OBJECT')), this.flow.objectType],
                     [th(this.i18n.__('WHEN_THE_PROCESS_STARTS')), triggerType],
                 ],
             },
@@ -53,8 +52,8 @@ export default class StartCondition {
             table: {
                 widths: [200, 'auto'],
                 body: [
-                    [th(this.i18n.__('PLATFORM_EVENT')), this.flowParser.getEventType()],
-                    [th(this.i18n.__('OBJECT')), this.flowParser.getObjectType()],
+                    [th(this.i18n.__('PLATFORM_EVENT')), this.flow.eventType],
+                    [th(this.i18n.__('OBJECT')), this.flow.objectType],
                 ],
             },
         };
@@ -72,9 +71,7 @@ export default class StartCondition {
             margin: [15, 5, 0, 0],
         };
 
-        const startElementName = this.flowParser.getStartElement();
-        const recordLookup = this.flowParser.getRecordLookup(startElementName);
-        const recordLookupFilters = getRecordLookupFilter(this.flowParser, recordLookup);
+        const recordLookupFilters = this.flow.eventMatchingConditions;
 
         if (recordLookupFilters.length === 0) {
             return [text, triggerTable];
@@ -83,7 +80,7 @@ export default class StartCondition {
         const matchText = { text: this.i18n.__('MATCHING_CONDITIONS'), margin: [0, 10, 0, 5] };
 
         recordLookupFilters.forEach((f, index) => {
-            matchTable.table.body.push([index + 1, ...f]);
+            matchTable.table.body.push([index + 1, f.field, f.operator, f.type, f.value]);
         });
 
         return [text, triggerTable, matchText, matchTable];
@@ -96,7 +93,7 @@ export default class StartCondition {
             layout: 'lightHorizontalLines',
             table: {
                 widths: [200, 'auto'],
-                body: [[th(this.i18n.__('OBJECT')), this.flowParser.getObjectType()]],
+                body: [[th(this.i18n.__('OBJECT')), this.flow.objectType]],
             },
         };
 

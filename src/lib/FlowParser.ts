@@ -1,13 +1,4 @@
-import {
-    Flow,
-    Decision,
-    ScheduledActionSection,
-    WaitEventSummary,
-    ActionCall,
-    implementsActionCall,
-    InputParamValue,
-    IteratableFlow,
-} from '../types/flow';
+import { Flow, Decision, ActionCall, implementsActionCall, InputParamValue, IteratableFlow } from '../types/flow';
 import {
     RecordCreate,
     RecordUpdate,
@@ -15,16 +6,33 @@ import {
     implementsRecordUpdate,
     RecordLookup,
 } from '../types/flowRecordAction';
-import { getActionCallDetail, getRecordCreateDetail, getRecordUpdateDetail } from './actionParser';
+import {
+    convertToReadableActionCall,
+    convertToReadableRecordCreate,
+    convertToReadableRecordUpdate,
+    getRecordLookupFilter,
+} from './actionParser';
 import { toArray } from './util/arrayUtils';
 import { implementsProcessMetadataValue, ProcessMetadataValue } from '../types/processMetadataValue';
 import { unescapeHtml } from './util/stringUtils';
+import {
+    ReadableProcess,
+    ReadableCondition,
+    ReadableActionGroup,
+    ReadableDecision,
+    ReadableActionItem,
+    ReadableScheduledActionSection,
+    ReadableWaitEventSummary,
+} from '../types/parser';
 
 export default class FlowParser {
     private readonly flow: IteratableFlow;
 
-    constructor(flow: Flow) {
+    private readonly name: string;
+
+    constructor(flow: Flow, name: string) {
         this.flow = flow as IteratableFlow;
+        this.name = name;
 
         for (const arrayName of [
             'processMetadataValues',
@@ -50,30 +58,6 @@ export default class FlowParser {
         return ['Workflow', 'CustomEvent', 'InvocableProcess'].includes(this.flow.processType);
     }
 
-    getProcessType() {
-        return this.flow.processType;
-    }
-
-    getLabel() {
-        return this.flow.label;
-    }
-
-    getDescription() {
-        return this.flow.description ? this.flow.description : '';
-    }
-
-    getEventType() {
-        return this.flow.processMetadataValues.find(p => p.name === 'EventType').value.stringValue;
-    }
-
-    getObjectType() {
-        return this.flow.processMetadataValues.find(p => p.name === 'ObjectType').value.stringValue;
-    }
-
-    getTriggerType() {
-        return this.flow.processMetadataValues.find(p => p.name === 'TriggerType').value.stringValue;
-    }
-
     getStartElement() {
         return this.flow.startElementReference;
     }
@@ -82,19 +66,11 @@ export default class FlowParser {
         return this.flow.decisions.find(d => d.name === name);
     }
 
-    getAction(name: string): ActionCall | RecordUpdate | RecordCreate {
-        return (
-            this.flow.actionCalls.find(a => a.name === name) ||
-            this.flow.recordCreates.find(a => a.name === name) ||
-            this.flow.recordUpdates.find(a => a.name === name)
-        );
-    }
-
     getRecordLookup(name: string): RecordLookup {
         return this.flow.recordLookups.find(r => r.name === name);
     }
 
-    getStandardDecisions(): Decision[] {
+    getStandardDecisions(): Array<Decision> {
         return this.flow.decisions
             .filter(d => d.processMetadataValues !== undefined)
             .sort((d1, d2) => {
@@ -105,7 +81,7 @@ export default class FlowParser {
             });
     }
 
-    getActionExecutionCriteria(decision) {
+    getActionExecutionCriteria(decision: Decision) {
         if (!Array.isArray(decision.rules.conditions)) {
             const condition = decision.rules.conditions;
             if (
@@ -139,7 +115,7 @@ export default class FlowParser {
         return this.resolveValue(targetCondition.rightValue);
     }
 
-    getActionSequence(actions, nextActionName) {
+    getActionSequence(actions: Array<ActionCall | RecordUpdate | RecordCreate>, nextActionName: string) {
         const nextAction = this.getAction(nextActionName);
         if (nextAction) {
             actions.push(nextAction);
@@ -159,65 +135,12 @@ export default class FlowParser {
         return actions;
     }
 
-    getActionDetail = (action: ActionCall | RecordCreate | RecordUpdate) => {
-        if (implementsActionCall(action)) {
-            return getActionCallDetail(this, action);
-        }
-        if (implementsRecordCreate(action)) {
-            return getRecordCreateDetail(this, action);
-        }
-        if (implementsRecordUpdate(action)) {
-            return getRecordUpdateDetail(this, action);
-        }
-        return { rows: [] };
-    };
-
-    getScheduledActionSections(waitName) {
-        const wait = this.flow.waits.find(a => a.name === waitName);
-        if (!wait) {
-            return undefined;
-        }
-        const waitEvents = toArray(wait.waitEvents);
-        const sections: ScheduledActionSection[] = [];
-        for (const waitEvent of waitEvents) {
-            const waitEventSummary = this.getWaitEventSummary(waitEvent);
-            const section: ScheduledActionSection = {
-                wait: waitEventSummary,
-                actions: this.getWaitEventActions(
-                    waitEvent,
-                    Object.prototype.hasOwnProperty.call(waitEventSummary, 'field')
-                ),
-            };
-            sections.push(section);
-        }
-        return sections;
-    }
-
-    getWaitEventSummary = (waitEvent): WaitEventSummary => {
-        const inputParams = toArray(waitEvent.inputParameters);
-        const rawTimeOffset = Number(inputParams.find(i => i.name === 'TimeOffset').value.numberValue);
-        const referencedFieldParam = inputParams.find(i => i.name === 'TimeFieldColumnEnumOrId');
-        const summary: WaitEventSummary = {
-            offset: Math.abs(rawTimeOffset),
-            isAfter: rawTimeOffset > 0,
-            unit: inputParams.find(i => i.name === 'TimeOffsetUnit').value.stringValue,
-        };
-        if (referencedFieldParam) {
-            summary.field = referencedFieldParam.value.stringValue;
-        }
-        return summary;
-    };
-
-    getWaitEventActions(waitEvent, comparedToField) {
-        let nextReference = waitEvent.connector.targetReference;
-        if (comparedToField) {
-            const decision = this.getDecision(nextReference);
-            if (!decision) {
-                return [];
-            }
-            nextReference = decision.rules.connector.targetReference;
-        }
-        return this.getActionSequence([], nextReference);
+    getAction(name: string): ActionCall | RecordCreate | RecordUpdate {
+        return (
+            this.flow.actionCalls.find(a => a.name === name) ||
+            this.flow.recordCreates.find(a => a.name === name) ||
+            this.flow.recordUpdates.find(a => a.name === name)
+        );
     }
 
     resolveValue = (value: string | InputParamValue | ProcessMetadataValue) => {
@@ -248,12 +171,21 @@ export default class FlowParser {
     };
 
     getConditionType = condition => {
-        return condition.processMetadataValues.find(p => p.name === 'rightHandSideType').value.stringValue;
+        if (condition.processMetadataValues) {
+            return condition.processMetadataValues.find(p => p.name === 'rightHandSideType').value.stringValue;
+        }
+        return undefined;
     };
 
     getFormulaExpression(name) {
         const formula = this.flow.formulas.find(f => f.name === name);
-        return formula.processMetadataValues.value.stringValue;
+        return formula ? formula.processMetadataValues.value.stringValue : undefined;
+    }
+
+    getDecisionFormulaExpression(decision: Decision): string {
+        const formulaName = decision.rules.conditions.leftValueReference;
+        const formulaExpression = this.getFormulaExpression(formulaName);
+        return formulaExpression ? unescape(formulaExpression) : undefined;
     }
 
     getObjectVariable(name) {
@@ -268,5 +200,185 @@ export default class FlowParser {
         const variableName = string.split('.')[0];
         const objectName = this.getObjectVariable(variableName);
         return string.replace(variableName, `[${objectName}]`);
+    }
+
+    createReadableProcess(): ReadableProcess {
+        const result: ReadableProcess = {
+            name: this.name,
+            label: this.getLabel(),
+            processType: this.getProcessType(),
+            objectType: this.getObjectType(),
+            description: this.getDescription(),
+            triggerType: this.getTriggerType(),
+            eventType: this.getEventType(),
+            eventMatchingConditions: this.getEventMatchingConditions(),
+            actionGroups: this.getReadableActionGroups(),
+        };
+        return result;
+    }
+
+    getLabel() {
+        return this.flow.label;
+    }
+
+    getProcessType() {
+        return this.flow.processType;
+    }
+
+    getDescription() {
+        return this.flow.description ? this.flow.description : '';
+    }
+
+    getObjectType() {
+        return this.flow.processMetadataValues.find(p => p.name === 'ObjectType').value.stringValue;
+    }
+
+    /**
+     * Returns trigger type (e.g., only in create, both create and edit) for workflow type process
+     */
+    getTriggerType() {
+        const triggerTypePmv = this.flow.processMetadataValues.find(p => p.name === 'TriggerType');
+        return triggerTypePmv ? triggerTypePmv.value.stringValue : undefined;
+    }
+
+    /**
+     * Returns platform event type
+     */
+    getEventType() {
+        const eventTypePmv = this.flow.processMetadataValues.find(p => p.name === 'EventType');
+        return eventTypePmv ? eventTypePmv.value.stringValue : undefined;
+    }
+
+    /**
+     * Returns matching condition for platform event based process
+     */
+    getEventMatchingConditions(): Array<ReadableCondition> {
+        if (this.getProcessType() === 'CustomEvent') {
+            const startElementName = this.getStartElement();
+            const recordLookup = this.getRecordLookup(startElementName);
+            return getRecordLookupFilter(this, recordLookup);
+        }
+        return undefined;
+    }
+
+    getReadableActionGroups(): Array<ReadableActionGroup> {
+        const actionGroups: Array<ReadableActionGroup> = [];
+        const decisions = this.getStandardDecisions();
+        for (const d of decisions) {
+            const actionGroup: ReadableActionGroup = {
+                decision: this.convertToReadableDecision(d),
+                evaluatesNext: false,
+            };
+            if (d.rules.connector) {
+                const firstActionName = d.rules.connector.targetReference;
+                const rawActions = this.getActionSequence([], firstActionName);
+                actionGroup.actions = this.convertToReadableActionItems(rawActions);
+                const lastRawAction = rawActions.slice(-1)[0];
+                if (lastRawAction.connector) {
+                    actionGroup.scheduledActionSections = this.getReadableScheduledActionSections(
+                        lastRawAction.connector.targetReference
+                    );
+                    const nextDecision = this.getDecision(lastRawAction.connector.targetReference);
+                    actionGroup.evaluatesNext = nextDecision && nextDecision.processMetadataValues !== undefined;
+                }
+            }
+            actionGroups.push(actionGroup);
+        }
+        return actionGroups;
+    }
+
+    convertToReadableDecision(decision: Decision): ReadableDecision {
+        const readableDecision: ReadableDecision = {
+            label: decision.label,
+            criteria: this.getActionExecutionCriteria(decision),
+            conditionLogic: decision.rules.conditionLogic.toUpperCase(),
+            conditions: this.getReadableDecisionConditions(decision),
+        };
+        if (readableDecision.criteria === 'FORMULA_EVALUATES_TO_TRUE') {
+            readableDecision.formulaExpression = this.getDecisionFormulaExpression(decision);
+        }
+        return readableDecision;
+    }
+
+    getReadableDecisionConditions(decision: Decision): Array<ReadableCondition> {
+        const rawConditions = toArray(decision.rules.conditions);
+        const result: Array<ReadableCondition> = [];
+        for (const c of rawConditions) {
+            const leftValue = this.resolveValue(c.leftValueReference);
+            const isChanged = leftValue.startsWith('isChanged'); // FIXME: This is a fragile implementation
+            result.push({
+                field: isChanged ? this.getIsChangedTargetField(leftValue) : leftValue,
+                operator: isChanged ? 'ISCHANGED' : c.operator,
+                type: this.getConditionType(c),
+                value: this.resolveValue(c.rightValue),
+            });
+        }
+        return result;
+    }
+
+    convertToReadableActionItems(actions: Array<ActionCall | RecordUpdate | RecordCreate>): Array<ReadableActionItem> {
+        return actions.map(a => this.convertToReadableActionItem(a));
+    }
+
+    convertToReadableActionItem = (action: ActionCall | RecordCreate | RecordUpdate): ReadableActionItem => {
+        if (implementsActionCall(action)) {
+            return convertToReadableActionCall(this, action);
+        }
+        if (implementsRecordCreate(action)) {
+            return convertToReadableRecordCreate(this, action);
+        }
+        if (implementsRecordUpdate(action)) {
+            return convertToReadableRecordUpdate(this, action);
+        }
+        return undefined;
+    };
+
+    getReadableScheduledActionSections(waitName: string): Array<ReadableScheduledActionSection> {
+        const wait = this.flow.waits.find(a => a.name === waitName);
+        if (!wait) {
+            return undefined;
+        }
+        const waitEvents = toArray(wait.waitEvents);
+        const sections: Array<ReadableScheduledActionSection> = [];
+        for (const waitEvent of waitEvents) {
+            const waitEventSummary = this.getReadableWaitEventSummary(waitEvent);
+            const waitEventActions = this.getWaitEventActions(
+                waitEvent,
+                Object.prototype.hasOwnProperty.call(waitEventSummary, 'field')
+            );
+            const section: ReadableScheduledActionSection = {
+                summary: waitEventSummary,
+                actions: this.convertToReadableActionItems(waitEventActions),
+            };
+            sections.push(section);
+        }
+        return sections;
+    }
+
+    getReadableWaitEventSummary = (waitEvent): ReadableWaitEventSummary => {
+        const inputParams = toArray(waitEvent.inputParameters);
+        const rawTimeOffset = Number(inputParams.find(i => i.name === 'TimeOffset').value.numberValue);
+        const referencedFieldParam = inputParams.find(i => i.name === 'TimeFieldColumnEnumOrId');
+        const summary: ReadableWaitEventSummary = {
+            offset: Math.abs(rawTimeOffset),
+            isAfter: rawTimeOffset > 0,
+            unit: inputParams.find(i => i.name === 'TimeOffsetUnit').value.stringValue,
+        };
+        if (referencedFieldParam) {
+            summary.field = referencedFieldParam.value.stringValue;
+        }
+        return summary;
+    };
+
+    getWaitEventActions(waitEvent, comparedToField) {
+        let nextReference = waitEvent.connector.targetReference;
+        if (comparedToField) {
+            const decision = this.getDecision(nextReference);
+            if (!decision) {
+                return [];
+            }
+            nextReference = decision.rules.connector.targetReference;
+        }
+        return this.getActionSequence([], nextReference);
     }
 }
