@@ -1,4 +1,4 @@
-import PdfProcessFormatter from './process/PdfProcessFormatter';
+import PdfProcessFormatter from './process/pdfProcessFormatter';
 import { ReadableProcess } from '../../types/parser';
 
 const styles = require('../../style/style.json');
