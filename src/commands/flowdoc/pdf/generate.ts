@@ -2,7 +2,7 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import * as fs from 'fs-extra';
 import { Flow } from '../../../types/flow';
-import FlowParser from '../../../lib/FlowParser';
+import FlowParser from '../../../lib/flowParser';
 import fonts from '../../../style/font';
 import buildPdfContent from '../../../lib/pdf/pdfBuilder';
 

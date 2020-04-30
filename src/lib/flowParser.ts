@@ -58,150 +58,6 @@ export default class FlowParser {
         return ['Workflow', 'CustomEvent', 'InvocableProcess'].includes(this.flow.processType);
     }
 
-    getStartElement() {
-        return this.flow.startElementReference;
-    }
-
-    getDecision(name: string) {
-        return this.flow.decisions.find(d => d.name === name);
-    }
-
-    getRecordLookup(name: string): RecordLookup {
-        return this.flow.recordLookups.find(r => r.name === name);
-    }
-
-    getStandardDecisions(): Array<Decision> {
-        return this.flow.decisions
-            .filter(d => d.processMetadataValues !== undefined)
-            .sort((d1, d2) => {
-                return (
-                    Number(d1.processMetadataValues.value.numberValue) -
-                    Number(d2.processMetadataValues.value.numberValue)
-                );
-            });
-    }
-
-    getActionExecutionCriteria(decision: Decision) {
-        if (!Array.isArray(decision.rules.conditions)) {
-            const condition = decision.rules.conditions;
-            if (
-                condition.operator === 'EqualTo' &&
-                condition.rightValue.booleanValue &&
-                condition.rightValue.booleanValue === 'true'
-            ) {
-                if (this.hasAlwaysTrueFormula(condition.leftValueReference)) {
-                    return 'NO_CRITERIA';
-                }
-                if (this.hasIsChangedCondition(condition.leftValueReference)) {
-                    return 'CONDITIONS_ARE_MET';
-                }
-                return 'FORMULA_EVALUATES_TO_TRUE';
-            }
-        }
-        return 'CONDITIONS_ARE_MET';
-    }
-
-    hasAlwaysTrueFormula(name) {
-        return this.flow.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
-    }
-
-    hasIsChangedCondition(name) {
-        return this.flow.decisions.some(d => d.rules && !Array.isArray(d.rules) && d.rules.name === name);
-    }
-
-    getIsChangedTargetField(name) {
-        const rule = this.flow.decisions.find(d => d.rules && !Array.isArray(d.rules) && d.rules.name === name).rules;
-        const targetCondition = rule.conditions.find(c => c.rightValue.elementReference !== undefined);
-        return this.resolveValue(targetCondition.rightValue);
-    }
-
-    getActionSequence(actions: Array<ActionCall | RecordUpdate | RecordCreate>, nextActionName: string) {
-        const nextAction = this.getAction(nextActionName);
-        if (nextAction) {
-            actions.push(nextAction);
-            if (nextAction.connector) {
-                this.getActionSequence(actions, nextAction.connector.targetReference);
-            }
-        } else if (actions.length === 0) {
-            const pmDecision = this.getDecision(nextActionName);
-            if (pmDecision) {
-                const rules = toArray(pmDecision.rules);
-                const connectedRule = rules.find(r => r.connector !== undefined);
-                if (connectedRule) {
-                    this.getActionSequence(actions, connectedRule.connector.targetReference);
-                }
-            }
-        }
-        return actions;
-    }
-
-    getAction(name: string): ActionCall | RecordCreate | RecordUpdate {
-        return (
-            this.flow.actionCalls.find(a => a.name === name) ||
-            this.flow.recordCreates.find(a => a.name === name) ||
-            this.flow.recordUpdates.find(a => a.name === name)
-        );
-    }
-
-    resolveValue = (value: string | InputParamValue | ProcessMetadataValue) => {
-        if (!value) {
-            return '$GlobalConstant.null';
-        }
-        // Chatter Message
-        if (implementsProcessMetadataValue(value)) {
-            if (value.name === 'textJson') {
-                return JSON.parse(unescapeHtml(value.value.stringValue)).message;
-            }
-            const key = Object.keys(value.value)[0];
-            return value.value[key];
-        }
-        // String
-        if (typeof value === 'string') {
-            return this.replaceVariableNameToObjectName(value);
-        }
-        // Object
-        const key = Object.keys(value)[0]; // stringValue or elementReference
-        if (key === 'elementReference') {
-            if (!value[key].includes('.')) {
-                return this.getFormulaExpression(value[key]);
-            }
-            return this.replaceVariableNameToObjectName(value[key]);
-        }
-        return value[key];
-    };
-
-    getConditionType = condition => {
-        if (condition.processMetadataValues) {
-            return condition.processMetadataValues.find(p => p.name === 'rightHandSideType').value.stringValue;
-        }
-        return undefined;
-    };
-
-    getFormulaExpression(name) {
-        const formula = this.flow.formulas.find(f => f.name === name);
-        return formula ? formula.processMetadataValues.value.stringValue : undefined;
-    }
-
-    getDecisionFormulaExpression(decision: Decision): string {
-        const formulaName = decision.rules.conditions.leftValueReference;
-        const formulaExpression = this.getFormulaExpression(formulaName);
-        return formulaExpression ? unescape(formulaExpression) : undefined;
-    }
-
-    getObjectVariable(name) {
-        const variable = this.flow.variables.find(v => v.name === name);
-        return variable.objectType;
-    }
-
-    replaceVariableNameToObjectName(string) {
-        if (!string.includes('.')) {
-            return string;
-        }
-        const variableName = string.split('.')[0];
-        const objectName = this.getObjectVariable(variableName);
-        return string.replace(variableName, `[${objectName}]`);
-    }
-
     createReadableProcess(): ReadableProcess {
         const result: ReadableProcess = {
             name: this.name,
@@ -221,22 +77,28 @@ export default class FlowParser {
         return this.flow.label;
     }
 
-    getProcessType() {
+    private getProcessType() {
         return this.flow.processType;
     }
 
-    getDescription() {
+    /**
+     * Returns flow description
+     */
+    private getDescription() {
         return this.flow.description ? this.flow.description : '';
     }
 
-    getObjectType() {
+    /**
+     * Returns sobject type of the flow
+     */
+    private getObjectType() {
         return this.flow.processMetadataValues.find(p => p.name === 'ObjectType').value.stringValue;
     }
 
     /**
      * Returns trigger type (e.g., only in create, both create and edit) for workflow type process
      */
-    getTriggerType() {
+    private getTriggerType() {
         const triggerTypePmv = this.flow.processMetadataValues.find(p => p.name === 'TriggerType');
         return triggerTypePmv ? triggerTypePmv.value.stringValue : undefined;
     }
@@ -244,7 +106,7 @@ export default class FlowParser {
     /**
      * Returns platform event type
      */
-    getEventType() {
+    private getEventType() {
         const eventTypePmv = this.flow.processMetadataValues.find(p => p.name === 'EventType');
         return eventTypePmv ? eventTypePmv.value.stringValue : undefined;
     }
@@ -261,6 +123,13 @@ export default class FlowParser {
         return undefined;
     }
 
+    private getStartElement() {
+        return this.flow.startElementReference;
+    }
+
+    /**
+     * Returns readable action group (decision and actions) based on the metadata
+     */
     getReadableActionGroups(): Array<ReadableActionGroup> {
         const actionGroups: Array<ReadableActionGroup> = [];
         const decisions = this.getStandardDecisions();
@@ -380,5 +249,149 @@ export default class FlowParser {
             nextReference = decision.rules.connector.targetReference;
         }
         return this.getActionSequence([], nextReference);
+    }
+
+    private getDecision(name: string) {
+        return this.flow.decisions.find(d => d.name === name);
+    }
+
+    private getRecordLookup(name: string): RecordLookup {
+        return this.flow.recordLookups.find(r => r.name === name);
+    }
+
+    private getStandardDecisions(): Array<Decision> {
+        return this.flow.decisions
+            .filter(d => d.processMetadataValues !== undefined)
+            .sort((d1, d2) => {
+                return (
+                    Number(d1.processMetadataValues.value.numberValue) -
+                    Number(d2.processMetadataValues.value.numberValue)
+                );
+            });
+    }
+
+    private getActionExecutionCriteria(decision: Decision) {
+        if (!Array.isArray(decision.rules.conditions)) {
+            const condition = decision.rules.conditions;
+            if (
+                condition.operator === 'EqualTo' &&
+                condition.rightValue.booleanValue &&
+                condition.rightValue.booleanValue === 'true'
+            ) {
+                if (this.hasAlwaysTrueFormula(condition.leftValueReference)) {
+                    return 'NO_CRITERIA';
+                }
+                if (this.hasIsChangedCondition(condition.leftValueReference)) {
+                    return 'CONDITIONS_ARE_MET';
+                }
+                return 'FORMULA_EVALUATES_TO_TRUE';
+            }
+        }
+        return 'CONDITIONS_ARE_MET';
+    }
+
+    /**
+     * Check if the given formula has always return true
+     * This is used in 'no criteria' decision.
+     */
+    private hasAlwaysTrueFormula(name) {
+        return this.flow.formulas.some(f => f.name === name && f.dataType === 'Boolean' && f.expression === 'true');
+    }
+
+    private hasIsChangedCondition(name) {
+        return this.flow.decisions.some(d => d.rules && !Array.isArray(d.rules) && d.rules.name === name);
+    }
+
+    private getIsChangedTargetField(name) {
+        const rule = this.flow.decisions.find(d => d.rules && !Array.isArray(d.rules) && d.rules.name === name).rules;
+        const targetCondition = rule.conditions.find(c => c.rightValue.elementReference !== undefined);
+        return this.resolveValue(targetCondition.rightValue);
+    }
+
+    private getActionSequence(actions: Array<ActionCall | RecordUpdate | RecordCreate>, nextActionName: string) {
+        const nextAction = this.getAction(nextActionName);
+        if (nextAction) {
+            actions.push(nextAction);
+            if (nextAction.connector) {
+                this.getActionSequence(actions, nextAction.connector.targetReference);
+            }
+        } else if (actions.length === 0) {
+            const pmDecision = this.getDecision(nextActionName);
+            if (pmDecision) {
+                const rules = toArray(pmDecision.rules);
+                const connectedRule = rules.find(r => r.connector !== undefined);
+                if (connectedRule) {
+                    this.getActionSequence(actions, connectedRule.connector.targetReference);
+                }
+            }
+        }
+        return actions;
+    }
+
+    private getAction(name: string): ActionCall | RecordCreate | RecordUpdate {
+        return (
+            this.flow.actionCalls.find(a => a.name === name) ||
+            this.flow.recordCreates.find(a => a.name === name) ||
+            this.flow.recordUpdates.find(a => a.name === name)
+        );
+    }
+
+    private getConditionType = condition => {
+        if (condition.processMetadataValues) {
+            return condition.processMetadataValues.find(p => p.name === 'rightHandSideType').value.stringValue;
+        }
+        return undefined;
+    };
+
+    private getFormulaExpression(name) {
+        const formula = this.flow.formulas.find(f => f.name === name);
+        return formula ? formula.processMetadataValues.value.stringValue : undefined;
+    }
+
+    private getDecisionFormulaExpression(decision: Decision): string {
+        const formulaName = decision.rules.conditions.leftValueReference;
+        const formulaExpression = this.getFormulaExpression(formulaName);
+        return formulaExpression ? unescape(formulaExpression) : undefined;
+    }
+
+    private getObjectVariable(name) {
+        const variable = this.flow.variables.find(v => v.name === name);
+        return variable.objectType;
+    }
+
+    resolveValue = (value: string | InputParamValue | ProcessMetadataValue) => {
+        if (!value) {
+            return '$GlobalConstant.null';
+        }
+        // Chatter Message
+        if (implementsProcessMetadataValue(value)) {
+            if (value.name === 'textJson') {
+                return JSON.parse(unescapeHtml(value.value.stringValue)).message;
+            }
+            const key = Object.keys(value.value)[0];
+            return value.value[key];
+        }
+        // String
+        if (typeof value === 'string') {
+            return this.replaceVariableNameToObjectName(value);
+        }
+        // Object
+        const key = Object.keys(value)[0]; // stringValue or elementReference
+        if (key === 'elementReference') {
+            if (!value[key].includes('.')) {
+                return this.getFormulaExpression(value[key]);
+            }
+            return this.replaceVariableNameToObjectName(value[key]);
+        }
+        return value[key];
+    };
+
+    private replaceVariableNameToObjectName(string) {
+        if (!string.includes('.')) {
+            return string;
+        }
+        const variableName = string.split('.')[0];
+        const objectName = this.getObjectVariable(variableName);
+        return string.replace(variableName, `[${objectName}]`);
     }
 }

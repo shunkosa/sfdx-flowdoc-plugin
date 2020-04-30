@@ -7,7 +7,7 @@ import {
     ReadableActionItem,
     ReadableWaitEventSummary,
 } from '../../../types/parser';
-import StartConditionFormatter from './StartConditionFormatter';
+import StartConditionFormatter from './startConditionFormatter';
 
 export default class PdfProcessFormatter {
     flow: ReadableProcess;
