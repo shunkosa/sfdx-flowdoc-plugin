@@ -57,7 +57,7 @@ export default class DocxProcessFormatter {
                 new Paragraph({
                     text: `${this.i18n.__('ACTION_GROUP')} ${i + 1}`,
                     heading: HeadingLevel.HEADING_2,
-                    spacing: { after: 100 },
+                    spacing: { after: 60 },
                 })
             );
 
@@ -101,7 +101,7 @@ export default class DocxProcessFormatter {
                         new Paragraph({
                             text: `${this.i18n.__('HEADER_ACTION')} ${index + 1}: ${action.label}`,
                             heading: HeadingLevel.HEADING_4,
-                            spacing: { after: 100 },
+                            spacing: { after: 40 },
                         })
                     );
                     const actionContents = this.buildActionContents(action);
@@ -124,7 +124,7 @@ export default class DocxProcessFormatter {
                             new Paragraph({
                                 text: `${this.i18n.__('HEADER_ACTION')} ${index + 1}: ${action.label}`,
                                 heading: HeadingLevel.HEADING_4,
-                                spacing: { after: 100 },
+                                spacing: { after: 40 },
                             })
                         );
                         const actionContents = this.buildActionContents(action);

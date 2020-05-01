@@ -40,7 +40,7 @@ export default class StartConditionFormatter {
             { name: this.i18n.__('WHEN_THE_PROCESS_STARTS'), value: triggerType },
         ]);
 
-        return [text, triggerTable];
+        return [text, triggerTable, new Paragraph({})];
     }
 
     private createCustomEventStartCondition() {
@@ -66,7 +66,7 @@ export default class StartConditionFormatter {
 
         const matchTable = createProcessConditionTable(recordLookupFilters, this.i18n);
 
-        return [text, triggerTable, matchText, matchTable];
+        return [text, triggerTable, matchText, matchTable, new Paragraph({})];
     }
 
     private createInvocableStartCondition() {
@@ -78,6 +78,6 @@ export default class StartConditionFormatter {
             { name: this.i18n.__('OBJECT'), value: this.flow.objectType },
         ]);
 
-        return [text, objectTable];
+        return [text, objectTable, new Paragraph({})];
     }
 }

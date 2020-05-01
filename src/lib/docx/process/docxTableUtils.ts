@@ -4,8 +4,8 @@ import { ReadableCondition, ReadableActionItemParameter } from '../../../types/p
 const CELL_DEFAULT_MARGIN = {
     top: 20,
     bottom: 20,
-    left: 50,
-    right: 50,
+    left: 80,
+    right: 80,
 };
 
 const TH_BORDER = {
