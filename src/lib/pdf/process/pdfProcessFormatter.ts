@@ -60,9 +60,7 @@ export default class PdfProcessFormatter {
                     content.push(this.createScheduledActionSummary(section.summary));
                     for (const action of section.actions) {
                         const actionContents = this.buildActionContents(action);
-                        for (const c of actionContents) {
-                            content.push(c);
-                        }
+                        content.push(...actionContents);
                     }
                 }
             }
@@ -116,32 +114,32 @@ export default class PdfProcessFormatter {
     }
 
     private buildActionContents(action: ReadableActionItem) {
-        const contents = [];
+        const content = [];
         const actionTables = this.buildActionTables(action);
-        contents.push(actionTables.actionTable);
+        content.push(actionTables.actionTable);
         if (actionTables.paramTable) {
             if (action.type === 'RECORD_UPDATE') {
                 const filterHeader = this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_FILTER_HEADER');
                 const filterCondition = actionTables.filterTable
                     ? this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_HAS_CRITERIA')
                     : this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_NO_CRITERIA');
-                contents.push({
+                content.push({
                     text: `${filterHeader} : ${filterCondition}`,
                     margin: [15, 0, 0, 10],
                 });
             }
             if (actionTables.filterTable) {
-                contents.push(actionTables.filterTable);
+                content.push(actionTables.filterTable);
             }
             if (action.type.includes('RECORD_')) {
-                contents.push({
+                content.push({
                     text: this.i18n.__(`ACTION_DETAIL_${action.type}_FIELD_HEADER`),
                     margin: [15, 0, 0, 10],
                 });
             }
-            contents.push(actionTables.paramTable);
+            content.push(actionTables.paramTable);
         }
-        return contents;
+        return content;
     }
 
     private buildActionTables(action: ReadableActionItem) {
