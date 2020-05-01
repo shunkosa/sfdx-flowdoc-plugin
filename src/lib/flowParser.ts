@@ -158,7 +158,7 @@ export default class FlowParser {
 
     convertToReadableDecision(decision: Decision): ReadableDecision {
         const readableDecision: ReadableDecision = {
-            label: decision.label,
+            label: decision.rules.label,
             criteria: this.getActionExecutionCriteria(decision),
             conditionLogic: decision.rules.conditionLogic.toUpperCase(),
             conditions: this.getReadableDecisionConditions(decision),
