@@ -1,11 +1,19 @@
-import { Table, TableRow, TableCell, Paragraph, TextRun } from 'docx';
+import { Table, TableRow, TableCell, Paragraph, TextRun, BorderStyle } from 'docx';
 import { ReadableCondition, ReadableActionItemParameter } from '../../../types/parser';
 
-const CELL_MARGIN = {
+const CELL_DEFAULT_MARGIN = {
     top: 20,
     bottom: 20,
     left: 50,
     right: 50,
+};
+
+const TH_BORDER = {
+    bottom: {
+        style: BorderStyle.THIN_THICK_SMALL_GAP,
+        size: 1,
+        color: '000000',
+    },
 };
 
 export function createHorizontalHeaderTable(rows: Array<{ name: string; value: string }>): Table {
@@ -16,11 +24,11 @@ export function createHorizontalHeaderTable(rows: Array<{ name: string; value: s
                 children: [
                     new TableCell({
                         children: [new Paragraph({ children: [bold(row.name)] })],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.value)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                 ],
             })
@@ -37,23 +45,28 @@ export function createProcessConditionTable(rows: Array<ReadableCondition>, i18n
             children: [
                 new TableCell({
                     children: [new Paragraph('')],
-                    margins: CELL_MARGIN,
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
                 new TableCell({
-                    children: [new Paragraph(i18n.__('FIELD'))],
-                    margins: CELL_MARGIN,
+                    children: [new Paragraph({ children: [bold(i18n.__('FIELD'))] })],
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
                 new TableCell({
-                    children: [new Paragraph(i18n.__('OPERATOR'))],
-                    margins: CELL_MARGIN,
+                    children: [new Paragraph({ children: [bold(i18n.__('OPERATOR'))] })],
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
                 new TableCell({
-                    children: [new Paragraph(i18n.__('TYPE'))],
-                    margins: CELL_MARGIN,
+                    children: [new Paragraph({ children: [bold(i18n.__('TYPE'))] })],
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
                 new TableCell({
-                    children: [new Paragraph(i18n.__('VALUE'))],
-                    margins: CELL_MARGIN,
+                    children: [new Paragraph({ children: [bold(i18n.__('VALUE'))] })],
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
             ],
         })
@@ -64,23 +77,23 @@ export function createProcessConditionTable(rows: Array<ReadableCondition>, i18n
                 children: [
                     new TableCell({
                         children: [new Paragraph(`${index + 1}`)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.field)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.operator)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.type)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.value)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                 ],
             })
@@ -97,19 +110,23 @@ export function createProcessParameterTable(rows: Array<ReadableActionItemParame
             children: [
                 new TableCell({
                     children: [new Paragraph('')],
-                    margins: CELL_MARGIN,
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
                 new TableCell({
-                    children: [new Paragraph(i18n.__('FIELD'))],
-                    margins: CELL_MARGIN,
+                    children: [new Paragraph({ children: [bold(i18n.__('FIELD'))] })],
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
                 new TableCell({
-                    children: [new Paragraph(i18n.__('TYPE'))],
-                    margins: CELL_MARGIN,
+                    children: [new Paragraph({ children: [bold(i18n.__('TYPE'))] })],
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
                 new TableCell({
-                    children: [new Paragraph(i18n.__('VALUE'))],
-                    margins: CELL_MARGIN,
+                    children: [new Paragraph({ children: [bold(i18n.__('VALUE'))] })],
+                    margins: CELL_DEFAULT_MARGIN,
+                    borders: TH_BORDER,
                 }),
             ],
         })
@@ -120,19 +137,19 @@ export function createProcessParameterTable(rows: Array<ReadableActionItemParame
                 children: [
                     new TableCell({
                         children: [new Paragraph(`${index + 1}`)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.field)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.type)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                     new TableCell({
                         children: [new Paragraph(row.value)],
-                        margins: CELL_MARGIN,
+                        margins: CELL_DEFAULT_MARGIN,
                     }),
                 ],
             })

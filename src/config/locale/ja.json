@@ -26,6 +26,7 @@
     "STOP_THE_PROCESS": "プロセスを停止",
     "EVALUATE_THE_NEXT_CRITERIA": "次の条件を評価",
     "HEADER_ACTIONS": "アクション",
+    "HEADER_ACTION": "アクション",
     "ACTION_TYPE": "アクション種別",
     "ACTION_NAME": "アクション名",
     "ACTION_TYPE_activateSessionPermSet": "",

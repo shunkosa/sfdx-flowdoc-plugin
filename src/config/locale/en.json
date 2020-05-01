@@ -26,6 +26,7 @@
     "STOP_THE_PROCESS": "Stop the process",
     "EVALUATE_THE_NEXT_CRITERIA": "Evaluate the next criteria",
     "HEADER_ACTIONS": "Actions",
+    "HEADER_ACTION": "Action",
     "ACTION_TYPE": "Action Type",
     "ACTION_NAME": "Action Name",
     "ACTION_TYPE_activateSessionPermSet": "",

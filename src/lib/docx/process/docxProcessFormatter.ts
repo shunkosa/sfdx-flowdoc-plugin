@@ -57,6 +57,7 @@ export default class DocxProcessFormatter {
                 new Paragraph({
                     text: `${this.i18n.__('ACTION_GROUP')} ${i + 1}`,
                     heading: HeadingLevel.HEADING_2,
+                    spacing: { after: 100 },
                 })
             );
 
@@ -77,11 +78,12 @@ export default class DocxProcessFormatter {
                 });
             }
             content.push(createHorizontalHeaderTable(decisionRows));
+            content.push(new Paragraph({}));
 
             // decision condition
             if (actionGroups[i].decision.criteria === 'CONDITIONS_ARE_MET') {
-                content.push(new Paragraph({}));
                 content.push(createProcessConditionTable(actionGroups[i].decision.conditions, this.i18n));
+                content.push(new Paragraph({}));
             }
 
             // actions
@@ -90,13 +92,21 @@ export default class DocxProcessFormatter {
                     new Paragraph({
                         text: this.i18n.__('HEADER_ACTIONS'),
                         heading: HeadingLevel.HEADING_3,
+                        spacing: { after: 100 },
                     })
                 );
 
-                for (const action of actionGroups[i].actions) {
+                actionGroups[i].actions.forEach((action, index) => {
+                    content.push(
+                        new Paragraph({
+                            text: `${this.i18n.__('HEADER_ACTION')} ${index + 1}: ${action.label}`,
+                            heading: HeadingLevel.HEADING_4,
+                            spacing: { after: 100 },
+                        })
+                    );
                     const actionContents = this.buildActionContents(action);
                     content.push(...actionContents);
-                }
+                });
             }
 
             // scheduled actions
@@ -109,12 +119,17 @@ export default class DocxProcessFormatter {
                 );
                 for (const section of actionGroups[i].scheduledActionSections) {
                     content.push(this.createScheduledActionSummary(section.summary));
-                    for (const action of section.actions) {
+                    section.actions.forEach((action, index) => {
+                        content.push(
+                            new Paragraph({
+                                text: `${this.i18n.__('HEADER_ACTION')} ${index + 1}: ${action.label}`,
+                                heading: HeadingLevel.HEADING_4,
+                                spacing: { after: 100 },
+                            })
+                        );
                         const actionContents = this.buildActionContents(action);
-                        for (const c of actionContents) {
-                            content.push(c);
-                        }
-                    }
+                        content.push(...actionContents);
+                    });
                 }
             }
 
@@ -126,11 +141,12 @@ export default class DocxProcessFormatter {
                 })
             );
             content.push(
-                new Paragraph(
-                    actionGroups[i].evaluatesNext
+                new Paragraph({
+                    text: actionGroups[i].evaluatesNext
                         ? this.i18n.__('EVALUATE_THE_NEXT_CRITERIA')
-                        : this.i18n.__('STOP_THE_PROCESS')
-                )
+                        : this.i18n.__('STOP_THE_PROCESS'),
+                    spacing: { after: 200 },
+                })
             );
         }
         return content;
@@ -155,6 +171,7 @@ export default class DocxProcessFormatter {
             }
             if (actionTables.filterTable) {
                 content.push(actionTables.filterTable);
+                content.push(new Paragraph({}));
             }
             if (action.type.includes('RECORD_')) {
                 content.push(
@@ -174,7 +191,6 @@ export default class DocxProcessFormatter {
     ): { actionTable: Table; paramTable?: Table; filterTable?: Table } {
         const actionTableRows = [
             { name: this.i18n.__('ACTION_TYPE'), value: this.i18n.__(`ACTION_TYPE_${action.type}`) },
-            { name: this.i18n.__('ACTION_NAME'), value: action.label },
         ];
 
         if (action.detail) {
