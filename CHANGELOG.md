@@ -1,3 +1,9 @@
+# 0.4.0 - May 2, 2020
+
+-   Add `.docx` export [(Issue #6)](https://github.com/shunkosa/sfdx-flowdoc-plugin/issues/6)
+-   Modify format for multiple actions
+-   Add spinner while command executing
+
 # 0.3.0 - April 27, 2020
 
 -   Update 'type' in conditions in decision
