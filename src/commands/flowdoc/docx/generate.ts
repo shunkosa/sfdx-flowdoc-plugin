@@ -1,12 +1,11 @@
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import * as fs from 'fs-extra';
+import * as docx from 'docx';
+
 import { Flow } from '../../../types/flow';
 import FlowParser from '../../../lib/flowParser';
-import fonts from '../../../style/font';
-import buildPdfContent from '../../../lib/pdf/pdfBuilder';
-
-const Pdf = require('pdfmake');
+import buildDocxContent from '../../../lib/docx/docxBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages');
@@ -16,10 +15,12 @@ export default class Generate extends SfdxCommand {
     public static description = messages.getMessage('commandDescription');
 
     public static examples = [
-        `$ sfdx flowdoc:pdf:generate Example
+        `$ sfdx flowdoc:docx:generate Example
+  Retrieving the process metadata... done
   Documentation of 'Example' flow is successfully generated.
   `,
-        `$ sfdx flowdoc:pdf:generate Example -l ja
+        `$ sfdx flowdoc:docx:generate Example -l ja
+  Retrieving the process metadata... done
   Documentation of 'Example' flow is successfully generated.
   `,
     ];
@@ -45,6 +46,7 @@ export default class Generate extends SfdxCommand {
         conn.setApiVersion(API_VERSION);
 
         const flow = await conn.metadata.read('Flow', this.args.file);
+
         if (Object.keys(flow).length === 0) {
             this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorFlowNotFound'));
@@ -57,14 +59,13 @@ export default class Generate extends SfdxCommand {
         this.ux.stopSpinner();
 
         const hrDoc = fp.createReadableProcess();
-        const docDefinition = buildPdfContent(hrDoc, this.flags.locale);
+        const doc = buildDocxContent(hrDoc, this.flags.locale);
 
-        const printer = new Pdf(fonts);
-        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        const targetPath = `${this.args.file}.docx`;
+        docx.Packer.toBuffer(doc).then(buffer => {
+            fs.writeFileSync(targetPath, buffer);
+        });
 
-        const targetPath = `${this.args.file}.pdf`;
-        pdfDoc.pipe(fs.createWriteStream(targetPath));
-        pdfDoc.end();
         const label: string = fp.getLabel();
         this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
 

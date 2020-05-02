@@ -10,6 +10,7 @@
         "@oclif/errors": "^1",
         "@salesforce/command": "^2",
         "@salesforce/core": "^2",
+        "docx": "^5.0.2",
         "fs-extra": "^9.0.0",
         "i18n": "^0.8.6",
         "path": "^0.12.7",
@@ -64,6 +65,9 @@
                 "description": ""
             },
             "flowdoc:pdf": {
+                "description": ""
+            },
+            "flowdoc:docx": {
                 "description": ""
             }
         },

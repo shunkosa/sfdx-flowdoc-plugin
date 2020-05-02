@@ -2,13 +2,18 @@ import { ActionCall, InputParamValue } from '../types/flow';
 import { RecordCreate, RecordUpdate, RecordFilter, RecordLookup } from '../types/flowRecordAction';
 import { toArray } from './util/arrayUtils';
 import { ProcessMetadataValue } from '../types/processMetadataValue';
+import { ReadableCondition, ReadableActionItem, ReadableActionItemParameter } from '../types/parser';
 
 const layout = require('./actionLayout.json');
 
-export function getActionCallDetail(flowParser, action: ActionCall) {
+export function convertToReadableActionCall(flowParser, action: ActionCall): ReadableActionItem {
+    const result: ReadableActionItem = {
+        label: action.label,
+        type: action.actionType,
+    };
     const actionLayout = layout[action.actionType];
     if (!actionLayout) {
-        return { rows: [] };
+        return result;
     }
 
     let targetLayout;
@@ -48,66 +53,75 @@ export function getActionCallDetail(flowParser, action: ActionCall) {
             value: flowParser.resolveValue(inputParamValue),
         });
     }
+    result.detail = rows;
 
     if (targetLayout.structure.hasFields) {
         const params = toArray(action.inputParameters);
-        const fields = [];
+        const fields: Array<ReadableActionItemParameter> = [];
         for (const i of params) {
             const field = i.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
             const type = i.processMetadataValues.find(ap => ap.name === 'dataType').value.stringValue;
             const value = flowParser.resolveValue(i.value);
-            fields.push([field, type, value]);
+            fields.push({ field, type, value });
         }
-        return { rows, fields };
+        result.params = fields;
+        return result;
     }
-    return { rows };
+
+    return result;
 }
 
-export function getRecordCreateDetail(flowParser, action: RecordCreate) {
+export function convertToReadableRecordCreate(flowParser, action: RecordCreate): ReadableActionItem {
+    const result: ReadableActionItem = {
+        label: action.label,
+        type: action.actionType,
+    };
+
     const recordType = action.object;
 
     const assignments = toArray(action.inputAssignments);
-    const fields = [];
+    const fields: Array<ReadableActionItemParameter> = [];
     for (const a of assignments) {
         const field = a.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
         const type = a.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
         const value = flowParser.resolveValue(a.value);
-        fields.push([field, type, value]);
+        fields.push({ field, type, value });
     }
-
-    return {
-        rows: [{ name: 'recordType', value: recordType }],
-        fields,
-    };
+    result.detail = [{ name: 'recordType', value: recordType }];
+    result.params = fields;
+    return result;
 }
 
-export function getRecordUpdateDetail(flowParser, action: RecordUpdate) {
+export function convertToReadableRecordUpdate(flowParser, action: RecordUpdate): ReadableActionItem {
+    const result: ReadableActionItem = {
+        label: action.label,
+        type: action.actionType,
+    };
     const pmvs = toArray<ProcessMetadataValue>(action.processMetadataValues);
     const record = pmvs.find(p => p.name === 'reference').value.stringValue;
 
     const assignments = toArray(action.inputAssignments);
-    const fields = [];
+    const fields: Array<ReadableActionItemParameter> = [];
     for (const a of assignments) {
         const field = a.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
         const type = a.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
         const value = flowParser.resolveValue(a.value);
-        fields.push([field, type, value]);
+        fields.push({ field, type, value });
     }
 
     const explicitFilters = toArray(action.filters).filter(f => isExplicit(f));
-    const filters = [];
+    const filters: Array<ReadableActionItemParameter> = [];
     for (const f of explicitFilters) {
         const field = f.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
         const type = f.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
         const value = flowParser.resolveValue(f.value);
-        filters.push([field, type, value]);
+        filters.push({ field, type, value });
     }
 
-    return {
-        rows: [{ name: 'record', value: record }],
-        fields,
-        filters,
-    };
+    result.detail = [{ name: 'record', value: record }];
+    result.params = fields;
+    result.conditions = filters;
+    return result;
 }
 
 function isExplicit(filter: RecordFilter) {
@@ -115,15 +129,15 @@ function isExplicit(filter: RecordFilter) {
     return pmvs.find(p => p.name === 'implicit').value.booleanValue === 'false';
 }
 
-export function getRecordLookupFilter(flowParser, action: RecordLookup) {
+export function getRecordLookupFilter(flowParser, action: RecordLookup): Array<ReadableCondition> {
     const explicitFilters = toArray(action.filters).filter(f => isExplicit(f));
-    const filters = [];
+    const filters: Array<ReadableCondition> = [];
     for (const f of explicitFilters) {
         const field = f.processMetadataValues.find(ap => ap.name === 'leftHandSideLabel').value.stringValue;
         const type = f.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
         const operator = f.processMetadataValues.find(ap => ap.name === 'rightHandSideType').value.stringValue;
         const value = flowParser.resolveValue(f.value);
-        filters.push([field, operator, type, value]);
+        filters.push({ field, operator, type, value });
     }
     return filters;
 }

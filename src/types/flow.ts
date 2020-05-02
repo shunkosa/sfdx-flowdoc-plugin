@@ -6,14 +6,14 @@ export interface Flow {
     label: string;
     description: string;
     startElementReference: string;
-    variables: Variable | Variable[];
-    processMetadataValues: ProcessMetadataValue[];
+    variables: Variable | Array<Variable>;
+    processMetadataValues: Array<ProcessMetadataValue>;
     formulas: any;
-    decisions: Decision | Decision[];
-    actionCalls?: ActionCall | ActionCall[];
-    recordUpdates?: RecordUpdate | RecordUpdate[];
-    recordCreates?: RecordCreate | RecordCreate[];
-    recordLookups?: RecordLookup | RecordLookup[];
+    decisions: Decision | Array<Decision>;
+    actionCalls?: ActionCall | Array<ActionCall>;
+    recordUpdates?: RecordUpdate | Array<RecordUpdate>;
+    recordCreates?: RecordCreate | Array<RecordCreate>;
+    recordLookups?: RecordLookup | Array<RecordLookup>;
     waits: any;
 }
 
@@ -22,14 +22,14 @@ export interface IteratableFlow {
     label: string;
     description: string;
     startElementReference: string;
-    variables: Variable[];
-    processMetadataValues: ProcessMetadataValue[];
+    variables: Array<Variable>;
+    processMetadataValues: Array<ProcessMetadataValue>;
     formulas: any;
-    decisions: Decision[];
-    actionCalls?: ActionCall[];
-    recordUpdates?: RecordUpdate[];
-    recordCreates?: RecordCreate[];
-    recordLookups?: RecordLookup[];
+    decisions: Array<Decision>;
+    actionCalls?: Array<ActionCall>;
+    recordUpdates?: Array<RecordUpdate>;
+    recordCreates?: Array<RecordCreate>;
+    recordLookups?: Array<RecordLookup>;
     waits: any;
 }
 
@@ -57,18 +57,6 @@ export interface Decision {
     processMetadataValues?: ProcessMetadataValue;
     rules: any;
     defaultConnector: any;
-}
-
-export interface ScheduledActionSection {
-    wait: WaitEventSummary;
-    actions: any;
-}
-
-export interface WaitEventSummary {
-    offset: number;
-    unit: string;
-    isAfter: boolean;
-    field?: string;
 }
 
 export interface InputParamValue {
