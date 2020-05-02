@@ -30,6 +30,7 @@ A Salesforce CLI plugin that generates design document from Lightning flow metad
 
 ### Output Format
 
+-   Word (.docx)
 -   PDF
 
 ## Setup
@@ -52,9 +53,19 @@ sfdx plugins:link .
 
 Specify an API name of your process
 
+### PDF output
+
 ```
 sfdx flowdoc:pdf:generate Example_Process
 ```
+
+### Word output
+
+```
+sfdx flowdoc:docx:generate Example_Process
+```
+
+### Locale
 
 Add `-l (--locale) ja` option to export Japanese document.
 
@@ -68,5 +79,5 @@ Feature requests, bug reports and pull requests are welcome!
 
 ## Coming Soon
 
+-   Flow Builder
 -   Diagram
--   Editable output
