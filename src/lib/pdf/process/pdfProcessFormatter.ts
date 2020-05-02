@@ -46,22 +46,22 @@ export default class PdfProcessFormatter {
             if (actionGroups[i].actions && actionGroups[i].actions.length > 0) {
                 content.push(h3(this.i18n.__('HEADER_ACTIONS')));
 
-                for (const action of actionGroups[i].actions) {
+                actionGroups[i].actions.forEach((action, index) => {
+                    content.push({ text: `${this.i18n.__('HEADER_ACTION')} ${index + 1}: ${action.label}` });
                     const actionContents = this.buildActionContents(action);
-                    for (const c of actionContents) {
-                        content.push(c);
-                    }
-                }
+                    content.push(...actionContents);
+                });
             }
 
             if (actionGroups[i].scheduledActionSections && actionGroups[i].scheduledActionSections.length > 0) {
                 content.push(h3(this.i18n.__('HEADER_SCHEDULED_ACTIONS')));
                 for (const section of actionGroups[i].scheduledActionSections) {
                     content.push(this.createScheduledActionSummary(section.summary));
-                    for (const action of section.actions) {
+                    section.actions.forEach((action, index) => {
+                        content.push({ text: `${this.i18n.__('HEADER_ACTION')} ${index + 1}: ${action.label}` });
                         const actionContents = this.buildActionContents(action);
                         content.push(...actionContents);
-                    }
+                    });
                 }
             }
 
@@ -146,10 +146,7 @@ export default class PdfProcessFormatter {
         const actionTable = {
             unbreakable: true,
             table: {
-                body: [
-                    [th(this.i18n.__('ACTION_TYPE')), this.i18n.__(`ACTION_TYPE_${action.type}`)],
-                    [th(this.i18n.__('ACTION_NAME')), action.label],
-                ],
+                body: [[th(this.i18n.__('ACTION_TYPE')), this.i18n.__(`ACTION_TYPE_${action.type}`)]],
             },
             margin: [0, 0, 0, 10],
         };
