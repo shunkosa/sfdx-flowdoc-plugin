@@ -40,17 +40,21 @@ export default class Generate extends SfdxCommand {
             throw new SfdxError(messages.getMessage('errorParamNotFound'));
         }
 
+        this.ux.startSpinner('Retrieving the process metadata');
         const conn = this.org.getConnection();
         conn.setApiVersion(API_VERSION);
 
         const flow = await conn.metadata.read('Flow', this.args.file);
         if (Object.keys(flow).length === 0) {
+            this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorFlowNotFound'));
         }
         const fp = new FlowParser((flow as unknown) as Flow, this.args.file);
         if (!fp.isSupportedFlow()) {
+            this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
         }
+        this.ux.stopSpinner();
 
         const hrDoc = fp.createReadableProcess();
         const docDefinition = buildPdfContent(hrDoc, this.flags.locale);
