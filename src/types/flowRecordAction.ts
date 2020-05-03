@@ -41,9 +41,9 @@ export interface RecordFilter {
 }
 
 export function implementsRecordCreate(arg: any): arg is RecordCreate {
-    return arg.actionType === 'RECORD_CREATE';
+    return arg.actionType === 'recordCreate';
 }
 
 export function implementsRecordUpdate(arg: any): arg is RecordUpdate {
-    return arg.actionType === 'RECORD_UPDATE';
+    return arg.actionType === 'recordUpdate';
 }

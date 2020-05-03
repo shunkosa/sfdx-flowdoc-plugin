@@ -48,7 +48,7 @@ export interface ActionCall {
 }
 
 export function implementsActionCall(arg: any): arg is ActionCall {
-    return !arg.actionType.includes('RECORD_');
+    return !(arg.actionType === 'recordUpdate' || arg.actionType === 'recordCreate');
 }
 
 export interface Decision {

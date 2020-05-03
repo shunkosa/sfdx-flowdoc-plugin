@@ -47,11 +47,11 @@ export default class FlowParser {
 
         const rawRecordUpdates = toArray(this.flow.recordUpdates);
         this.flow.recordUpdates =
-            rawRecordUpdates.length !== 0 ? rawRecordUpdates.map(a => ({ ...a, actionType: 'RECORD_UPDATE' })) : [];
+            rawRecordUpdates.length !== 0 ? rawRecordUpdates.map(a => ({ ...a, actionType: 'recordUpdate' })) : [];
 
         const rawRecordCreates = toArray(this.flow.recordCreates);
         this.flow.recordCreates =
-            rawRecordCreates.length !== 0 ? rawRecordCreates.map(a => ({ ...a, actionType: 'RECORD_CREATE' })) : [];
+            rawRecordCreates.length !== 0 ? rawRecordCreates.map(a => ({ ...a, actionType: 'recordCreate' })) : [];
     }
 
     isSupportedFlow() {
