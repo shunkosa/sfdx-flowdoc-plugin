@@ -62,13 +62,16 @@
         "bin": "sfdx",
         "topics": {
             "flowdoc": {
-                "description": ""
+                "description": "commands to handle flow metadata"
             },
             "flowdoc:pdf": {
-                "description": ""
+                "description": "command to generate pdf document"
             },
             "flowdoc:docx": {
-                "description": ""
+                "description": "command to generate docx document"
+            },
+            "flowdoc:json": {
+                "description": "commands to generate/display json file"
             }
         },
         "devPlugins": [
