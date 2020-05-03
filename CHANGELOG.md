@@ -1,3 +1,8 @@
+# 0.5.0 - May 3, 2020
+
+-   Add JSON export [(Issue #11)](https://github.com/shunkosa/sfdx-flowdoc-plugin/issues/22)
+-   Add `-o (--outdir)` options
+
 # 0.4.0 - May 2, 2020
 
 -   Add `.docx` export [(Issue #6)](https://github.com/shunkosa/sfdx-flowdoc-plugin/issues/6)
