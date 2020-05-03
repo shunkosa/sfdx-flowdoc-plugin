@@ -8,6 +8,7 @@ import {
     ReadableWaitEventSummary,
 } from '../../../types/parser';
 import StartConditionFormatter from './startConditionFormatter';
+import { toUpperSnakeCase } from '../../util/stringUtils';
 
 export default class PdfProcessFormatter {
     flow: ReadableProcess;
@@ -118,7 +119,7 @@ export default class PdfProcessFormatter {
         const actionTables = this.buildActionTables(action);
         content.push(actionTables.actionTable);
         if (actionTables.paramTable) {
-            if (action.type === 'RECORD_UPDATE') {
+            if (action.type === 'recordUpdate') {
                 const filterHeader = this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_FILTER_HEADER');
                 const filterCondition = actionTables.filterTable
                     ? this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_HAS_CRITERIA')
@@ -131,9 +132,9 @@ export default class PdfProcessFormatter {
             if (actionTables.filterTable) {
                 content.push(actionTables.filterTable);
             }
-            if (action.type.includes('RECORD_')) {
+            if (action.type.startsWith('record')) {
                 content.push({
-                    text: this.i18n.__(`ACTION_DETAIL_${action.type}_FIELD_HEADER`),
+                    text: this.i18n.__(`ACTION_DETAIL_${toUpperSnakeCase(action.type)}_FIELD_HEADER`),
                     margin: [15, 0, 0, 10],
                 });
             }
@@ -146,14 +147,17 @@ export default class PdfProcessFormatter {
         const actionTable = {
             unbreakable: true,
             table: {
-                body: [[th(this.i18n.__('ACTION_TYPE')), this.i18n.__(`ACTION_TYPE_${action.type}`)]],
+                body: [[th(this.i18n.__('ACTION_TYPE')), this.i18n.__(`ACTION_TYPE_${toUpperSnakeCase(action.type)}`)]],
             },
             margin: [0, 0, 0, 10],
         };
 
         if (action.detail) {
             for (const d of action.detail) {
-                actionTable.table.body.push([th(this.i18n.__(`ACTION_DETAIL_${action.type}_${d.name}`)), d.value]);
+                actionTable.table.body.push([
+                    th(this.i18n.__(`ACTION_DETAIL_${toUpperSnakeCase(action.type)}_${toUpperSnakeCase(d.name)}`)),
+                    d.value,
+                ]);
             }
         }
         if (!action.params || action.params.length === 0) {

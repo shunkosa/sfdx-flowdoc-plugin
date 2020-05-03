@@ -12,6 +12,7 @@ import {
     createProcessConditionTable,
     createProcessParameterTable,
 } from './docxTableUtils';
+import { toUpperSnakeCase } from '../../util/stringUtils';
 
 export default class DocxProcessFormatter {
     flow: ReadableProcess;
@@ -158,7 +159,7 @@ export default class DocxProcessFormatter {
         content.push(actionTables.actionTable);
         content.push(new Paragraph({}));
         if (actionTables.paramTable) {
-            if (action.type === 'RECORD_UPDATE') {
+            if (action.type === 'recordUpdate') {
                 const filterHeader = this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_FILTER_HEADER');
                 const filterCondition = actionTables.filterTable
                     ? this.i18n.__('ACTION_DETAIL_RECORD_UPDATE_HAS_CRITERIA')
@@ -173,10 +174,10 @@ export default class DocxProcessFormatter {
                 content.push(actionTables.filterTable);
                 content.push(new Paragraph({}));
             }
-            if (action.type.includes('RECORD_')) {
+            if (action.type.startsWith('record')) {
                 content.push(
                     new Paragraph({
-                        text: this.i18n.__(`ACTION_DETAIL_${action.type}_FIELD_HEADER`),
+                        text: this.i18n.__(`ACTION_DETAIL_${toUpperSnakeCase(action.type)}_FIELD_HEADER`),
                     })
                 );
             }
@@ -190,13 +191,13 @@ export default class DocxProcessFormatter {
         action: ReadableActionItem
     ): { actionTable: Table; paramTable?: Table; filterTable?: Table } {
         const actionTableRows = [
-            { name: this.i18n.__('ACTION_TYPE'), value: this.i18n.__(`ACTION_TYPE_${action.type}`) },
+            { name: this.i18n.__('ACTION_TYPE'), value: this.i18n.__(`ACTION_TYPE_${toUpperSnakeCase(action.type)}`) },
         ];
 
         if (action.detail) {
             for (const d of action.detail) {
                 actionTableRows.push({
-                    name: this.i18n.__(`ACTION_DETAIL_${action.type}_${d.name}`),
+                    name: this.i18n.__(`ACTION_DETAIL_${toUpperSnakeCase(action.type)}_${toUpperSnakeCase(d.name)}`),
                     value: d.value,
                 });
             }
