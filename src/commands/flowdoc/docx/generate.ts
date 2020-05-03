@@ -61,9 +61,11 @@ export default class Generate extends SfdxCommand {
         const hrDoc = fp.createReadableProcess();
         const doc = buildDocxContent(hrDoc, this.flags.locale);
 
+        const outdir = this.flags.outdir ? this.flags.outdir : '.';
+        await fs.ensureDir(outdir);
         const targetPath = `${this.args.file}.docx`;
         docx.Packer.toBuffer(doc).then(buffer => {
-            fs.writeFileSync(targetPath, buffer);
+            fs.writeFileSync(`${outdir}/${targetPath}`, buffer);
         });
 
         const label: string = fp.getLabel();

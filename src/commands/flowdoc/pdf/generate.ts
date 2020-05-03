@@ -62,8 +62,10 @@ export default class Generate extends SfdxCommand {
         const printer = new Pdf(fonts);
         const pdfDoc = printer.createPdfKitDocument(docDefinition);
 
+        const outdir = this.flags.outdir ? this.flags.outdir : '.';
+        await fs.ensureDir(outdir);
         const targetPath = `${this.args.file}.pdf`;
-        pdfDoc.pipe(fs.createWriteStream(targetPath));
+        pdfDoc.pipe(fs.createWriteStream(`${outdir}/${targetPath}`));
         pdfDoc.end();
         const label: string = fp.getLabel();
         this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
