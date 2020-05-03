@@ -1,6 +1,6 @@
 # Flowdoc (alpha)
 
-A Salesforce CLI plugin that generates design document from Lightning flow metadata
+A Salesforce CLI plugin that generates design document from Lightning Flow metadata
 
 [![Github Workflow](https://github.com/shunkosa/sfdx-flowdoc-plugin/workflows/unit%20test/badge.svg?branch=master)](https://github.com/shunkosa/sfdx-flowdoc-plugin/actions?query=workflow%3A%22unit%20test%22)
 [![Version](https://img.shields.io/npm/v/sfdx-flowdoc-plugin.svg)](https://npmjs.org/package/sfdx-flowdoc-plugin)
@@ -32,6 +32,7 @@ A Salesforce CLI plugin that generates design document from Lightning flow metad
 
 -   Word (.docx)
 -   PDF
+-   JSON
 
 ## Setup
 
@@ -56,13 +57,25 @@ Specify an API name of your process
 ### PDF output
 
 ```
-sfdx flowdoc:pdf:generate Example_Process
+sfdx flowdoc:pdf:generate Example_Process -o dest
 ```
 
 ### Word output
 
 ```
-sfdx flowdoc:docx:generate Example_Process
+sfdx flowdoc:docx:generate Example_Process -o dest
+```
+
+### JSON output
+
+```
+sfdx flowdoc:json:generate Example_Process
+```
+
+You can also use the display command and redirect the output. Use `--nospinner` option if you don't need spinner while the command execution.
+
+```
+sfdx flowdoc:json:display Example_Process --nospinner > example_process.json
 ```
 
 ### Locale
