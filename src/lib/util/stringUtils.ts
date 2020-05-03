@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/prefer-default-export
 export function unescapeHtml(target) {
     if (typeof target !== 'string') return target;
 
@@ -15,4 +14,7 @@ export function unescapeHtml(target) {
     return target.replace(/&(lt|gt|amp|quot|#x27|#x60);/g, function(match) {
         return patterns[match];
     });
+}
+export function toUpperSnakeCase(camelCaseText) {
+    return camelCaseText.replace(/[A-Z]/g, letter => `_${letter}`).toUpperCase();
 }
