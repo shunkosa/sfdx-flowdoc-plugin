@@ -35,7 +35,7 @@ export interface ReadableCondition {
 export interface ReadableActionItem {
     label: string;
     type: string;
-    detail?: Array<any>;
+    details?: Array<any>;
     conditions?: Array<ReadableActionItemParameter>;
     params?: Array<ReadableActionItemParameter>;
 }

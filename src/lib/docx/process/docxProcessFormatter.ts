@@ -194,8 +194,8 @@ export default class DocxProcessFormatter {
             { name: this.i18n.__('ACTION_TYPE'), value: this.i18n.__(`ACTION_TYPE_${toUpperSnakeCase(action.type)}`) },
         ];
 
-        if (action.detail) {
-            for (const d of action.detail) {
+        if (action.details) {
+            for (const d of action.details) {
                 actionTableRows.push({
                     name: this.i18n.__(`ACTION_DETAIL_${toUpperSnakeCase(action.type)}_${toUpperSnakeCase(d.name)}`),
                     value: d.value,

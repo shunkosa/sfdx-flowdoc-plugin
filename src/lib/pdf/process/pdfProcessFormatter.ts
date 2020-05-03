@@ -152,8 +152,8 @@ export default class PdfProcessFormatter {
             margin: [0, 0, 0, 10],
         };
 
-        if (action.detail) {
-            for (const d of action.detail) {
+        if (action.details) {
+            for (const d of action.details) {
                 actionTable.table.body.push([
                     th(this.i18n.__(`ACTION_DETAIL_${toUpperSnakeCase(action.type)}_${toUpperSnakeCase(d.name)}`)),
                     d.value,

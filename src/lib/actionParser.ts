@@ -53,7 +53,7 @@ export function convertToReadableActionCall(flowParser, action: ActionCall): Rea
             value: flowParser.resolveValue(inputParamValue),
         });
     }
-    result.detail = rows;
+    result.details = rows;
 
     if (targetLayout.structure.hasFields) {
         const params = toArray(action.inputParameters);
@@ -87,7 +87,7 @@ export function convertToReadableRecordCreate(flowParser, action: RecordCreate):
         const value = flowParser.resolveValue(a.value);
         fields.push({ field, type, value });
     }
-    result.detail = [{ name: 'recordType', value: recordType }];
+    result.details = [{ name: 'recordType', value: recordType }];
     result.params = fields;
     return result;
 }
@@ -118,7 +118,7 @@ export function convertToReadableRecordUpdate(flowParser, action: RecordUpdate):
         filters.push({ field, type, value });
     }
 
-    result.detail = [{ name: 'record', value: record }];
+    result.details = [{ name: 'record', value: record }];
     result.params = fields;
     result.conditions = filters;
     return result;
