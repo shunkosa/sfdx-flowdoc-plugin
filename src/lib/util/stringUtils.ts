@@ -16,5 +16,8 @@ export function unescapeHtml(target) {
     });
 }
 export function toUpperSnakeCase(camelCaseText) {
-    return camelCaseText.replace(/[A-Z]/g, letter => `_${letter}`).toUpperCase();
+    return camelCaseText
+        .replace(/[A-Z]/g, letter => `_${letter}`)
+        .toUpperCase()
+        .replace(/^_/, '');
 }
