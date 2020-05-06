@@ -1,3 +1,5 @@
+import { SUPPORTED_FLOW, SUPPORTED_PROCESS } from '../lib/parser/constants';
+
 export interface ReadableProcess {
     processType: string;
     name: string;
@@ -8,6 +10,44 @@ export interface ReadableProcess {
     eventType?: string; // only in platform event process
     eventMatchingConditions?: Array<ReadableCondition>; // only in platform event process
     actionGroups: Array<ReadableActionGroup>;
+}
+
+export interface ReadableFlow {
+    processType: string;
+    name: string;
+    label: string;
+    description?: string;
+    start: ReadableStart;
+    elements?: Array<ReadableFlowElement>;
+}
+
+export interface ReadableFlowElement {
+    name: string;
+    label: string;
+    description?: string;
+    type: string;
+    element: any;
+}
+
+export interface ReadableStart {
+    triggerType: string;
+    recordTriggerType?: string;
+    object?: string;
+    schedule?: {
+        startDate: string;
+        startTime: string;
+        frequency: string;
+    };
+}
+
+export interface ReadableAssignment {
+    assignments: Array<ReadableAssignmentItem>;
+}
+
+export interface ReadableAssignmentItem {
+    reference: string;
+    operator: string;
+    value: string;
 }
 
 export interface ReadableActionGroup {
@@ -56,4 +96,12 @@ export interface ReadableWaitEventSummary {
     unit: string;
     isAfter: boolean;
     field?: string;
+}
+
+export function implementsReadableFlow(arg: any): arg is ReadableFlow {
+    return SUPPORTED_FLOW.includes(arg.processType);
+}
+
+export function implementsReadableProcess(arg: any): arg is ReadableProcess {
+    return SUPPORTED_PROCESS.includes(arg.processType);
 }

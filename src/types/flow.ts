@@ -15,6 +15,7 @@ export interface Flow {
     recordCreates?: RecordCreate | Array<RecordCreate>;
     recordLookups?: RecordLookup | Array<RecordLookup>;
     waits: any;
+    start?: any;
 }
 
 export interface IteratableFlow {
@@ -31,6 +32,7 @@ export interface IteratableFlow {
     recordCreates?: Array<RecordCreate>;
     recordLookups?: Array<RecordLookup>;
     waits: any;
+    start?: any;
 }
 
 interface Variable {
