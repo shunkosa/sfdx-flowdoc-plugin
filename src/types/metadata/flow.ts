@@ -5,15 +5,18 @@ export interface Flow {
     processType: string;
     label: string;
     description: string;
-    startElementReference: string;
+    startElementReference?: string;
     variables: Variable | Array<Variable>;
     processMetadataValues: Array<ProcessMetadataValue>;
     formulas: any;
     decisions: Decision | Array<Decision>;
+    assignments: any;
     actionCalls?: ActionCall | Array<ActionCall>;
     recordUpdates?: RecordUpdate | Array<RecordUpdate>;
     recordCreates?: RecordCreate | Array<RecordCreate>;
     recordLookups?: RecordLookup | Array<RecordLookup>;
+    recordDeletes?: any;
+    loops?: any;
     waits: any;
     start?: any;
 }

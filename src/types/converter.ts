@@ -7,15 +7,18 @@ export interface IteratableFlow {
     processType: string;
     label: string;
     description: string;
-    startElementReference: string;
+    startElementReference?: string;
     variables: Array<Variable>;
     processMetadataValues: Array<ProcessMetadataValue>;
     formulas: any;
     decisions: Array<Decision>;
+    assignments?: any;
     actionCalls?: Array<ActionCall>;
     recordUpdates?: Array<RecordUpdate>;
     recordCreates?: Array<RecordCreate>;
     recordLookups?: Array<RecordLookup>;
+    recordDeletes?: any;
+    loops?: any;
     waits: any;
     start?: any;
 }

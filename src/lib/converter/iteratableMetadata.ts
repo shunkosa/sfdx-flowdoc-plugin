@@ -13,6 +13,8 @@ export default function convertToIteratableMetadata(flow: Flow): IteratableFlow 
         waits: toArray(flow.waits),
         start: flow.start,
         processMetadataValues: toArray(flow.processMetadataValues),
+        assignments: toArray(flow.assignments),
+        loops: toArray(flow.loops),
         decisions: toArray(flow.decisions),
         actionCalls: toArray(flow.actionCalls),
         recordLookups: toArray(flow.recordLookups),
@@ -23,6 +25,10 @@ export default function convertToIteratableMetadata(flow: Flow): IteratableFlow 
         recordUpdates:
             toArray(flow.recordUpdates).length > 0
                 ? toArray(flow.recordUpdates).map(action => ({ ...action, actionType: 'recordUpdate' }))
+                : [],
+        recordDeletes:
+            toArray(flow.recordDeletes).length > 0
+                ? toArray(flow.recordDeletes).map(action => ({ ...action, actionType: 'recordDelete' }))
                 : [],
     };
 }
