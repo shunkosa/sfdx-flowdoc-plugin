@@ -2,9 +2,13 @@ import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 import * as fs from 'fs-extra';
 
-import { Flow } from '../../../types/flow';
-import FlowParser from '../../../lib/flowParser';
-import buildLocalizedJson from '../../../lib/json/jsonBuilder';
+import { Flow } from '../../../types/metadata/flow';
+import { isSupported, isProcess } from '../../../lib/util/flowUtils';
+import JsonBuilder from '../../../lib/json/jsonBuilder';
+import {
+    ReadableProcessMetadataConverter,
+    ReadableFlowMetadataConverter,
+} from '../../../lib/converter/metadataConverter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages');
@@ -45,30 +49,30 @@ export default class Generate extends SfdxCommand {
         const conn = this.org.getConnection();
         conn.setApiVersion(API_VERSION);
 
-        const flow = await conn.metadata.read('Flow', this.args.file);
-
+        const flow = ((await conn.metadata.read('Flow', this.args.file)) as unknown) as Flow;
         if (Object.keys(flow).length === 0) {
             this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorFlowNotFound'));
         }
-        const fp = new FlowParser((flow as unknown) as Flow, this.args.file);
-        if (!fp.isSupportedFlow()) {
+
+        if (!isSupported(flow)) {
             this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
         }
         this.ux.stopSpinner();
 
-        const readableFlow = fp.createReadableProcess();
-        const localizedJson = buildLocalizedJson(readableFlow, this.flags.locale);
+        const jsonBuilder = new JsonBuilder(this.flags.locale);
+        const json = isProcess(flow)
+            ? new ReadableProcessMetadataConverter(flow, this.args.file).accept(jsonBuilder)
+            : new ReadableFlowMetadataConverter(flow, this.args.file).accept(jsonBuilder);
 
         const targetPath = `${this.args.file}.json`;
 
         const outdir = this.flags.outdir ? this.flags.outdir : '.';
         await fs.ensureDir(outdir);
-        fs.writeFileSync(`${outdir}/${targetPath}`, JSON.stringify(localizedJson, null, '  '));
+        fs.writeFileSync(`${outdir}/${targetPath}`, JSON.stringify(json, null, '  '));
 
-        const label: string = fp.getLabel();
-        this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
+        this.ux.log(`Documentation of '${flow.label}' flow is successfully generated.`);
 
         return flow;
     }

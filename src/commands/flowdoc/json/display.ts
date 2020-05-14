@@ -1,9 +1,13 @@
 import { flags, SfdxCommand } from '@salesforce/command';
 import { Messages, SfdxError } from '@salesforce/core';
 
-import { Flow } from '../../../types/flow';
-import FlowParser from '../../../lib/flowParser';
-import buildLocalizedJson from '../../../lib/json/jsonBuilder';
+import { Flow } from '../../../types/metadata/flow';
+import { isSupported, isProcess } from '../../../lib/util/flowUtils';
+import JsonBuilder from '../../../lib/json/jsonBuilder';
+import {
+    ReadableProcessMetadataConverter,
+    ReadableFlowMetadataConverter,
+} from '../../../lib/converter/metadataConverter';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages');
@@ -41,22 +45,23 @@ export default class Display extends SfdxCommand {
         const conn = this.org.getConnection();
         conn.setApiVersion(API_VERSION);
 
-        const flow = await conn.metadata.read('Flow', this.args.file);
-
+        const flow = ((await conn.metadata.read('Flow', this.args.file)) as unknown) as Flow;
         if (Object.keys(flow).length === 0) {
             this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorFlowNotFound'));
         }
-        const fp = new FlowParser((flow as unknown) as Flow, this.args.file);
-        if (!fp.isSupportedFlow()) {
+
+        if (!isSupported(flow)) {
             this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
         }
         this.ux.stopSpinner();
 
-        const readableFlow = fp.createReadableProcess();
-        const localizedJson = buildLocalizedJson(readableFlow, this.flags.locale);
-        this.ux.log(JSON.stringify(localizedJson, null, '  '));
+        const jsonBuilder = new JsonBuilder(this.flags.locale);
+        const json = isProcess(flow)
+            ? new ReadableProcessMetadataConverter(flow, this.args.file).accept(jsonBuilder)
+            : new ReadableFlowMetadataConverter(flow, this.args.file).accept(jsonBuilder);
+        this.ux.log(JSON.stringify(json, null, '  '));
 
         return flow;
     }
