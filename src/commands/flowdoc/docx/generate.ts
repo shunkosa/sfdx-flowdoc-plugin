@@ -3,9 +3,13 @@ import { Messages, SfdxError } from '@salesforce/core';
 import * as fs from 'fs-extra';
 import * as docx from 'docx';
 
-import { Flow } from '../../../types/flow';
-import FlowParser from '../../../lib/flowParser';
-import buildDocxContent from '../../../lib/docx/docxBuilder';
+import { Flow } from '../../../types/metadata/flow';
+import {
+    ReadableProcessMetadataConverter,
+    ReadableFlowMetadataConverter,
+} from '../../../lib/converter/metadataConverter';
+import { isSupported, isProcess } from '../../../lib/util/flowUtils';
+import DocxBuilder from '../../../lib/docx/docxBuilder';
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages');
@@ -45,21 +49,22 @@ export default class Generate extends SfdxCommand {
         const conn = this.org.getConnection();
         conn.setApiVersion(API_VERSION);
 
-        const flow = await conn.metadata.read('Flow', this.args.file);
-
+        const flow = ((await conn.metadata.read('Flow', this.args.file)) as unknown) as Flow;
         if (Object.keys(flow).length === 0) {
             this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorFlowNotFound'));
         }
-        const fp = new FlowParser((flow as unknown) as Flow, this.args.file);
-        if (!fp.isSupportedFlow()) {
+
+        if (!isSupported(flow)) {
             this.ux.stopSpinner('failed.');
             throw new SfdxError(messages.getMessage('errorUnsupportedFlow'));
         }
         this.ux.stopSpinner();
 
-        const hrDoc = fp.createReadableProcess();
-        const doc = buildDocxContent(hrDoc, this.flags.locale);
+        const docxBuilder = new DocxBuilder(this.flags.locale);
+        const doc = isProcess(flow)
+            ? new ReadableProcessMetadataConverter(flow, this.args.file).accept(docxBuilder)
+            : new ReadableFlowMetadataConverter(flow, this.args.file).accept(docxBuilder);
 
         const outdir = this.flags.outdir ? this.flags.outdir : '.';
         await fs.ensureDir(outdir);
@@ -68,8 +73,7 @@ export default class Generate extends SfdxCommand {
             fs.writeFileSync(`${outdir}/${targetPath}`, buffer);
         });
 
-        const label: string = fp.getLabel();
-        this.ux.log(`Documentation of '${label}' flow is successfully generated.`);
+        this.ux.log(`Documentation of '${flow.label}' flow is successfully generated.`);
 
         return flow;
     }

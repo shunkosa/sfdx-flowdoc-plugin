@@ -4,7 +4,7 @@ import {
     ReadableActionItem,
     ReadableActionItemParameter,
     ReadableWaitEventSummary,
-} from '../../../types/parser';
+} from '../../../types/converter';
 import i18n from '../../../config/i18n';
 import StartConditionFormatter from './startConditionFormatter';
 import {
