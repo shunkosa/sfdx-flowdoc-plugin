@@ -1,15 +1,14 @@
 import { Document } from 'docx';
-import buildDocxContent from '../../../src/lib/docx/docxBuilder';
-import FlowParser from '../../../src/lib/flowParser';
-import { Flow } from '../../../src/types/flow';
+import { Flow } from '../../../src/types/metadata/flow';
 
 import testFlow from '../testFlow.json';
+import DocxBuilder from '../../../src/lib/docx/docxBuilder';
+import { ReadableProcessMetadataConverter } from '../../../src/lib/converter/metadataConverter';
 
 describe('lib/pdf/pdfBuilder', () => {
     it('buildPdfContent()', () => {
-        const fp = new FlowParser(testFlow as Flow, 'test_flow');
-        const readableFlow = fp.createReadableProcess();
-        const docxContent = buildDocxContent(readableFlow, 'en');
+        const docxBuilder = new DocxBuilder('en');
+        const docxContent = new ReadableProcessMetadataConverter(testFlow as Flow, 'test_flow').accept(docxBuilder);
         expect(docxContent instanceof Document).toBeTruthy();
     });
 });

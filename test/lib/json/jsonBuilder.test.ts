@@ -1,13 +1,13 @@
 import { Flow } from '../../../src/types/metadata/flow';
 
 import testFlow from '../testFlow.json';
-import PdfBuilder from '../../../src/lib/pdf/pdfBuilder';
+import JsonBuilder from '../../../src/lib/json/jsonBuilder';
 import { ReadableProcessMetadataConverter } from '../../../src/lib/converter/metadataConverter';
 
 describe('lib/pdf/pdfBuilder', () => {
     it('buildPdfContent()', () => {
-        const pdfBuilder = new PdfBuilder('en');
-        const pdfContent = new ReadableProcessMetadataConverter(testFlow as Flow, 'test_flow').accept(pdfBuilder);
-        expect(pdfContent.content).toHaveLength(48);
+        const jsonBuilder = new JsonBuilder('en');
+        const jsonContent = new ReadableProcessMetadataConverter(testFlow as Flow, 'test_flow').accept(jsonBuilder);
+        expect(jsonContent).toBeTruthy();
     });
 });
