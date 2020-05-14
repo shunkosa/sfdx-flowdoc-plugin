@@ -16,7 +16,7 @@ export class ReadableFlowMetadataConverter implements MetadataConverter {
     }
 
     accept(builder: DocumentBuilder) {
-        return builder.visit(this);
+        return builder.buildFlowDocument(this);
     }
 }
 
@@ -29,11 +29,18 @@ export class ReadableProcessMetadataConverter implements MetadataConverter {
     }
 
     accept(builder: DocumentBuilder) {
-        return builder.visit(this);
+        return builder.buildProcessDocument(this);
     }
 }
 
-interface DocumentBuilder {
-    visit(parser: ReadableFlowMetadataConverter);
-    visit(parser: ReadableProcessMetadataConverter);
+export abstract class DocumentBuilder {
+    protected locale: string;
+
+    constructor(locale: string) {
+        this.locale = locale;
+    }
+
+    abstract buildFlowDocument(converter: ReadableFlowMetadataConverter): any;
+
+    abstract buildProcessDocument(converter: ReadableProcessMetadataConverter): any;
 }

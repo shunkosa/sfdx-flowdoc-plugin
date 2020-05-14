@@ -3,7 +3,6 @@ import { IteratableFlow } from '../../types/converter';
 import { RecordLookup } from '../../types/metadata/flowRecordAction';
 import { implementsProcessMetadataValue, ProcessMetadataValue } from '../../types/metadata/processMetadataValue';
 import { unescapeHtml } from '../util/stringUtils';
-import { SUPPORTED_PROCESS, SUPPORTED_FLOW } from './helper/constants';
 import convertToIteratableMetadata from './iteratableMetadata';
 
 export default class ReadableMetadata {
@@ -28,20 +27,6 @@ export default class ReadableMetadata {
      */
     protected getProcessType() {
         return this.flow.processType;
-    }
-
-    /**
-     * @return {boolean} Returns true if the flow is supported
-     */
-    public isSupportedFlow() {
-        return (
-            this.isProcess() ||
-            (SUPPORTED_FLOW.includes(this.flow.processType) && this.flow.start.recordTriggerType !== undefined)
-        );
-    }
-
-    private isProcess() {
-        return SUPPORTED_PROCESS.includes(this.flow.processType);
     }
 
     /**

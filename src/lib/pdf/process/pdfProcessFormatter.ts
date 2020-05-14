@@ -6,7 +6,7 @@ import {
     ReadableCondition,
     ReadableActionItem,
     ReadableWaitEventSummary,
-} from '../../../types/parser';
+} from '../../../types/converter';
 import StartConditionFormatter from './startConditionFormatter';
 import { toUpperSnakeCase } from '../../util/stringUtils';
 
