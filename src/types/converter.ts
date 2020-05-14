@@ -1,4 +1,24 @@
-import { SUPPORTED_FLOW, SUPPORTED_PROCESS } from '../lib/parser/constants';
+import { SUPPORTED_FLOW, SUPPORTED_PROCESS } from '../lib/converter/helper/constants';
+import { ProcessMetadataValue } from './metadata/processMetadataValue';
+import { Variable, Decision, ActionCall } from './metadata/flow';
+import { RecordUpdate, RecordCreate, RecordLookup } from './metadata/flowRecordAction';
+
+export interface IteratableFlow {
+    processType: string;
+    label: string;
+    description: string;
+    startElementReference: string;
+    variables: Array<Variable>;
+    processMetadataValues: Array<ProcessMetadataValue>;
+    formulas: any;
+    decisions: Array<Decision>;
+    actionCalls?: Array<ActionCall>;
+    recordUpdates?: Array<RecordUpdate>;
+    recordCreates?: Array<RecordCreate>;
+    recordLookups?: Array<RecordLookup>;
+    waits: any;
+    start?: any;
+}
 
 export interface ReadableProcess {
     processType: string;

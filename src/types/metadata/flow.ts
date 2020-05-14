@@ -18,24 +18,7 @@ export interface Flow {
     start?: any;
 }
 
-export interface IteratableFlow {
-    processType: string;
-    label: string;
-    description: string;
-    startElementReference: string;
-    variables: Array<Variable>;
-    processMetadataValues: Array<ProcessMetadataValue>;
-    formulas: any;
-    decisions: Array<Decision>;
-    actionCalls?: Array<ActionCall>;
-    recordUpdates?: Array<RecordUpdate>;
-    recordCreates?: Array<RecordCreate>;
-    recordLookups?: Array<RecordLookup>;
-    waits: any;
-    start?: any;
-}
-
-interface Variable {
+export interface Variable {
     name: string;
     objectType: string;
 }
