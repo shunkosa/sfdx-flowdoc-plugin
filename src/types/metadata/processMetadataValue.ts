@@ -7,6 +7,7 @@ export type ElementReferenceOrValue = RequireOne<{
     stringValue?: string;
     numberValue?: string;
     booleanValue?: string;
+    dateValue?: string;
     elementReference?: string;
 }>;
 
@@ -19,6 +20,7 @@ function implementsElementReferenceOrValue(arg: any): arg is ElementReferenceOrV
         arg.stringValue !== undefined ||
         arg.numberValue !== undefined ||
         arg.booleanValue !== undefined ||
+        arg.dateValue !== undefined ||
         arg.elementReference !== undefined
     );
 }
