@@ -138,12 +138,12 @@ export default class FlowParser {
                 decision: this.convertToReadableDecision(d),
                 evaluatesNext: false,
             };
-            if (d.rules.connector) {
+            if (d.rules && d.rules.connector) {
                 const firstActionName = d.rules.connector.targetReference;
                 const rawActions = this.getActionSequence([], firstActionName);
                 actionGroup.actions = this.convertToReadableActionItems(rawActions);
                 const lastRawAction = rawActions.slice(-1)[0];
-                if (lastRawAction.connector) {
+                if (lastRawAction && lastRawAction.connector) {
                     actionGroup.scheduledActionSections = this.getReadableScheduledActionSections(
                         lastRawAction.connector.targetReference
                     );
