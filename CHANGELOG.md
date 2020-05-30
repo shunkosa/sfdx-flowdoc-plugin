@@ -1,3 +1,7 @@
+# 0.5.1 - May 30, 2020
+
+-   Fix some bugs
+
 # 0.5.0 - May 3, 2020
 
 -   Add JSON export [(Issue #11)](https://github.com/shunkosa/sfdx-flowdoc-plugin/issues/22)
