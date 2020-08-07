@@ -1,7 +1,5 @@
 import { Flow } from '../../types/metadata/flow';
-
-export const SUPPORTED_PROCESS = ['Workflow', 'CustomEvent', 'InvocableProcess'];
-export const SUPPORTED_FLOW = ['AutoLaunchedFlow'];
+import { SUPPORTED_PROCESS, SUPPORTED_FLOW } from '../converter/helper/constants';
 
 export function isSupported(flow: Flow) {
     return (
