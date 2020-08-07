@@ -1,6 +1,6 @@
 import { Flow } from '../../../src/types/metadata/flow';
 
-import testFlow from '../testFlow.json';
+import testFlow from '../../data/testFlow.json';
 import JsonBuilder from '../../../src/lib/json/jsonBuilder';
 import { ReadableProcessMetadataConverter } from '../../../src/lib/converter/metadataConverter';
 

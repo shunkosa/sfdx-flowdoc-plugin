@@ -1,4 +1,4 @@
-import { toUpperSnakeCase } from '../../src/lib/util/stringUtils';
+import { toUpperSnakeCase } from '../../../src/lib/util/stringUtils';
 
 describe('lib/utils/stringUtils', () => {
     it('toUpperSnakeCase()', () => {

@@ -1,6 +1,6 @@
-import testFlow from './testFlow.json';
-import { Flow } from '../../src/types/metadata/flow';
-import { isSupported, isProcess } from '../../src/lib/util/flowUtils';
+import testFlow from '../../data/testFlow.json';
+import { Flow } from '../../../src/types/metadata/flow';
+import { isSupported, isProcess } from '../../../src/lib/util/flowUtils';
 
 describe('lib/flowUtils', () => {
     it('isSupported', () => {

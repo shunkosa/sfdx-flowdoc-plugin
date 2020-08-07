@@ -2,7 +2,10 @@
     "$": { "xmlns": "http://soap.sforce.com/2006/04/metadata" },
     "actionCalls": [
         {
-            "processMetadataValues": { "name": "emailAlertSelection", "value": { "stringValue": "Email_to_Financial_Group" } },
+            "processMetadataValues": {
+                "name": "emailAlertSelection",
+                "value": { "stringValue": "Email_to_Financial_Group" }
+            },
             "name": "myRule_1_A1",
             "label": "Email to Financial Group",
             "locationX": "100",
@@ -24,10 +27,16 @@
             "actionName": "submit",
             "actionType": "submit",
             "connector": { "targetReference": "myDecision5" },
-            "inputParameters": [{ "name": "objectId", "value": { "elementReference": "myVariable_current.Id" } }, { "name": "comment" }]
+            "inputParameters": [
+                { "name": "objectId", "value": { "elementReference": "myVariable_current.Id" } },
+                { "name": "comment" }
+            ]
         },
         {
-            "processMetadataValues": { "name": "emailAlertSelection", "value": { "stringValue": "Email_to_Financial_Group" } },
+            "processMetadataValues": {
+                "name": "emailAlertSelection",
+                "value": { "stringValue": "Email_to_Financial_Group" }
+            },
             "name": "myRule_6_A2",
             "label": "Email to Financial Group Again",
             "locationX": "600",
@@ -43,7 +52,11 @@
             "label": "myWaitAssignment_myWait_myRule_1",
             "locationX": "0",
             "locationY": "0",
-            "assignmentItems": { "assignToReference": "cancelWaits", "operator": "Add", "value": { "stringValue": "myWait_myRule_1" } },
+            "assignmentItems": {
+                "assignToReference": "cancelWaits",
+                "operator": "Add",
+                "value": { "stringValue": "myWait_myRule_1" }
+            },
             "connector": { "targetReference": "myDecision" }
         },
         {
@@ -123,7 +136,11 @@
             "rules": {
                 "name": "myRule_6",
                 "conditionLogic": "and",
-                "conditions": { "leftValueReference": "formula_myRule_6", "operator": "EqualTo", "rightValue": { "booleanValue": "true" } },
+                "conditions": {
+                    "leftValueReference": "formula_myRule_6",
+                    "operator": "EqualTo",
+                    "rightValue": { "booleanValue": "true" }
+                },
                 "connector": { "targetReference": "myRule_6_A1" },
                 "label": "closed Won?"
             }
@@ -138,7 +155,11 @@
             "rules": {
                 "name": "myRule_9",
                 "conditionLogic": "and",
-                "conditions": { "leftValueReference": "formula_myRule_9", "operator": "EqualTo", "rightValue": { "booleanValue": "true" } },
+                "conditions": {
+                    "leftValueReference": "formula_myRule_9",
+                    "operator": "EqualTo",
+                    "rightValue": { "booleanValue": "true" }
+                },
                 "label": "All OK"
             }
         },
@@ -147,7 +168,9 @@
             "label": "myPostWaitDecision_myWaitEvent_myWait_myRule_1_event_0",
             "locationX": "0",
             "locationY": "0",
-            "defaultConnector": { "targetReference": "myWaitEvent_myWait_myRule_1_event_0_postWaitExecutionAssignment" },
+            "defaultConnector": {
+                "targetReference": "myWaitEvent_myWait_myRule_1_event_0_postWaitExecutionAssignment"
+            },
             "defaultConnectorLabel": "default",
             "rules": {
                 "name": "myPostWaitRule_myWaitEvent_myWait_myRule_1_event_0",
@@ -197,7 +220,11 @@
                 {
                     "name": "myRule_1_pmetnullrule",
                     "conditionLogic": "or",
-                    "conditions": { "leftValueReference": "myVariable_old", "operator": "IsNull", "rightValue": { "booleanValue": "true" } },
+                    "conditions": {
+                        "leftValueReference": "myVariable_old",
+                        "operator": "IsNull",
+                        "rightValue": { "booleanValue": "true" }
+                    },
                     "connector": { "targetReference": "myRule_1_A1" },
                     "label": "Previously Met - Null"
                 },
@@ -229,7 +256,10 @@
             "expression": "TODAY() + 7"
         },
         {
-            "processMetadataValues": { "name": "originalFormula", "value": { "stringValue": "180 + [Opportunity].CloseDate " } },
+            "processMetadataValues": {
+                "name": "originalFormula",
+                "value": { "stringValue": "180 + [Opportunity].CloseDate " }
+            },
             "name": "formula_7_myRule_6_A1_6831756980",
             "dataType": "Date",
             "expression": "180 + {!myVariable_current.CloseDate}"
