@@ -41,29 +41,29 @@ export interface ReadableFlow {
     label: string;
     description?: string;
     start: ReadableStart;
-    elements?: Array<ReadableFlowElement>;
-}
-
-export interface ReadableFlowElement {
-    name: string;
-    label: string;
-    description?: string;
-    type: string;
-    element: any;
+    elements?: Array<ReadableFlowBuilderItem>;
 }
 
 export interface ReadableStart {
     triggerType: string;
-    recordTriggerType?: string;
+    recordTriggerType?: string; // update, create, both
     object?: string;
     schedule?: {
         startDate: string;
         startTime: string;
         frequency: string;
     };
+    context?: 'BEFORE_SAVE' | 'AFTER_SAVE';
 }
 
-export interface ReadableAssignment {
+export interface ReadableFlowElement {
+    type: string;
+    name: string;
+    label: string;
+    description?: string;
+}
+
+export interface ReadableAssignment extends ReadableFlowElement {
     assignments: Array<ReadableAssignmentItem>;
 }
 
@@ -73,6 +73,21 @@ export interface ReadableAssignmentItem {
     value: string;
 }
 
+export interface ReadableLoop extends ReadableFlowElement {
+    elements: Array<ReadableFlowBuilderItem>;
+}
+
+export interface ReadableFlowDecision extends ReadableFlowElement {
+    routes: Array<ReadableFlowDecisionRoute>;
+}
+
+export interface ReadableFlowDecisionRoute {
+    name: string;
+    label: string;
+    rule?: Array<ReadableCondition>;
+    elements: Array<ReadableFlowBuilderItem>;
+}
+
 export interface ReadableActionGroup {
     decision: ReadableDecision;
     actions?: Array<ReadableActionItem>;
@@ -80,8 +95,8 @@ export interface ReadableActionGroup {
     evaluatesNext?: boolean;
 }
 
-export interface ReadableDecision {
-    label: string;
+// TODO: Rename to ReadableProcessDecision
+export interface ReadableDecision extends ReadableFlowElement {
     criteria: string;
     conditionLogic: string;
     conditions: Array<ReadableCondition>;
@@ -121,6 +136,33 @@ export interface ReadableWaitEventSummary {
     field?: string;
 }
 
+export interface ReadableRecordLookup extends ReadableFlowElement {
+    object: string;
+    filterCondition: 'NONE' | 'MEET_ALL_CONDITIONS';
+    filters?: Array<ReadableFlowRecordLookupFilter>;
+    sortBy: {
+        order: 'NONE' | 'ASC' | 'DSC';
+        field: string;
+    };
+    numberOfRecords: 'ONLY_FIRST' | 'ALL';
+    output: {
+        method: 'ALL_FIELDS' | 'CHOOSE_FIELDS' | 'CHOOSE_AND_ASSIGN_FIELDS';
+        fields?: Array<any>;
+        assignments?: Array<any>;
+    };
+}
+
+export interface OutputAssignment {
+    field: string;
+    reference: string;
+}
+
+export interface ReadableFlowRecordLookupFilter {
+    field: string;
+    operator: string;
+    value: string;
+}
+
 export function implementsReadableFlow(arg: any): arg is ReadableFlow {
     return SUPPORTED_FLOW.includes(arg.processType);
 }
@@ -128,3 +170,5 @@ export function implementsReadableFlow(arg: any): arg is ReadableFlow {
 export function implementsReadableProcess(arg: any): arg is ReadableProcess {
     return SUPPORTED_PROCESS.includes(arg.processType);
 }
+
+export type ReadableFlowBuilderItem = ReadableAssignment | ReadableDecision | ReadableLoop | ReadableRecordLookup; // | ReadableRecordCreate | ReadableRecordUpdate | ReadableRecordDelete ;

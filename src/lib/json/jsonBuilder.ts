@@ -11,8 +11,9 @@ export default class JsonBuilder extends DocumentBuilder {
     i18n = i18n(this.locale);
 
     buildFlowDocument(converter: ReadableFlowMetadataConverter) {
-        console.log(this.locale);
-        console.log(converter.readableMetadata);
+        // TODO: translate labels
+        console.log(`building json... ${this.i18n}`);
+        return converter.readableMetadata;
     }
 
     buildProcessDocument(converter: ReadableProcessMetadataConverter) {

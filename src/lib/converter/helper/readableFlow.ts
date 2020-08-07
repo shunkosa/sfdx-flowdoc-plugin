@@ -1,48 +1,190 @@
 import ReadableMetadata from '../readableMetadata';
-import { ReadableFlow, ReadableStart } from '../../../types/converter';
+import {
+    ReadableFlow,
+    ReadableAssignmentItem,
+    ReadableAssignment,
+    ReadableFlowBuilderItem,
+    ReadableLoop,
+    ReadableFlowDecisionRoute,
+    ReadableFlowDecision,
+} from '../../../types/converter';
+import {
+    Flow,
+    FlowBuilderItem,
+    implementsAssignment,
+    Assignment,
+    AssignmentItem,
+    Loop,
+    implementsLoop,
+    implementsDecision,
+    Decision,
+} from '../../../types/metadata/flow';
+import { toArray } from '../../util/arrayUtils';
+import ReadableFlowStartElement from './readableFlowStart';
 
 export default class ReadableFlowMetadata extends ReadableMetadata {
+    flowBuilderItems: ReadonlyArray<FlowBuilderItem>;
+
+    visitedItemNameSet: Set<string>;
+
+    constructor(flow: Flow, name: string) {
+        super(flow, name);
+        this.flowBuilderItems = [
+            ...this.flow.actionCalls,
+            ...this.flow.assignments,
+            ...this.flow.loops,
+            ...this.flow.decisions,
+            ...this.flow.recordLookups,
+            ...this.flow.recordCreates,
+            ...this.flow.recordUpdates,
+            ...this.flow.recordDeletes,
+        ];
+        this.visitedItemNameSet = new Set<string>();
+    }
+
     createReadableFlow(): ReadableFlow {
+        const start = new ReadableFlowStartElement(this.flow);
+
         return {
             name: this.name,
             label: this.getLabel(),
             processType: this.getProcessType(),
             description: this.getDescription(),
-            start: this.getReadableFlowStart(),
-            elements: undefined, // this.getReadableFlowElements()
+            start: start.getReadableElement(),
+            elements: this.getReadableFlowElements([], this.getFirstElementName()),
         };
     }
 
-    private getFlowTriggerType() {
-        if (this.flow.start.recordTriggerType) {
-            return 'FLOW_TRIGGER_RECORD';
-        }
-        if (this.flow.start.schedule) {
-            return 'FLOW_TRIGGER_SCHEDULED';
-        }
-        return 'FLOW_TRIGGER_USER_OR_APPS';
+    private getFirstElementName() {
+        return this.flow.start.connector ? this.flow.start.connector.targetReference : undefined;
     }
 
-    private getFlowRecordTriggerType() {
-        switch (this.flow.start.recordTriggerType) {
-            case 'Create':
-                return 'FROW_TRIGGER_RECORD_CREATE_ONLY';
-            case 'Update':
-                return 'FROW_TRIGGER_RECORD_UPDATE_ONLY';
-            case 'CreateAndUpdate':
-                return 'FROW_TRIGGER_RECORD_CREATE_OR_UPDATE';
-            default:
-                return undefined;
+    // Array<ReadableFlowBuilderItem>
+    private getReadableFlowElements(
+        currentElements: Array<any>,
+        targetReference: string
+    ): Array<ReadableFlowBuilderItem> {
+        if (!targetReference) {
+            return currentElements;
         }
+        const nextElement = this.flowBuilderItems.find(e => e.name === targetReference);
+        if (nextElement) {
+            /* const readableNextElement = this.convertToReadableFlowElement(nextElement);
+            if (readableNextElement) {
+                currentElements.push(readableNextElement);
+            }
+            if (implementsAssignment(nextElement)) {
+                const nextReference = nextElement.connector ? nextElement.connector.targetReference : undefined;
+                this.getReadableFlowElements(currentElements, nextReference);
+            }
+            */
+            this.visitedItemNameSet.add(nextElement.name);
+            let nextReference;
+            if (implementsLoop(nextElement)) {
+                nextReference = nextElement.noMoreValuesConnector
+                    ? nextElement.noMoreValuesConnector.targetReference
+                    : undefined;
+                currentElements.push(this.convertToReadableLoop(nextElement));
+            } else if (implementsDecision(nextElement)) {
+                // nextReference = nextElement.defaultConnector ? nextElement.defaultConnector.targetReference : undefined;
+                currentElements.push(this.convertToReadableDecision(nextElement));
+            } else {
+                nextReference = nextElement.connector ? nextElement.connector.targetReference : undefined;
+                currentElements.push({ label: nextElement.label, name: nextElement.name });
+            }
+
+            this.getReadableFlowElements(currentElements, nextReference);
+        }
+        return currentElements;
     }
 
-    private getReadableFlowStart(): ReadableStart {
-        const triggerType = this.getFlowTriggerType();
+    private convertToReadableFlowElement(flowBuilderItem: FlowBuilderItem): ReadableFlowBuilderItem {
+        if (implementsAssignment(flowBuilderItem)) {
+            return this.convertToReadableAssingment(flowBuilderItem);
+        }
+        if (implementsLoop(flowBuilderItem)) {
+            return this.convertToReadableLoop(flowBuilderItem);
+        }
+        return undefined;
+    }
+
+    private convertToReadableDecision(decision: Decision): ReadableFlowDecision {
+        const defaultRoute: ReadableFlowDecisionRoute = {
+            name: decision.defaultConnectorLabel,
+            label: undefined,
+            elements: this.traceDecisionRouteElements([], decision.defaultConnector.targetReference),
+        };
+        const rules = toArray(decision.rules);
+        const ruleRoutes: Array<ReadableFlowDecisionRoute> = [];
+        for (const rule of rules) {
+            if (rule.connector) {
+                ruleRoutes.push({
+                    name: rule.name,
+                    label: rule.label,
+                    elements: this.traceDecisionRouteElements([], rule.connector.targetReference),
+                });
+            }
+        }
         return {
-            triggerType,
-            object: this.flow.start.object,
-            recordTriggerType: this.getFlowRecordTriggerType(),
-            schedule: triggerType === 'FLOW_TRIGGER_SCHEDULED' ? this.flow.start.schedule : undefined,
+            type: 'decision',
+            name: decision.name,
+            label: decision.label,
+            routes: [defaultRoute, ...ruleRoutes],
+        };
+    }
+
+    private traceDecisionRouteElements(
+        routeElements: Array<any>,
+        targetReference: string
+    ): Array<ReadableFlowBuilderItem> {
+        if (!targetReference || this.visitedItemNameSet.has(targetReference)) {
+            return routeElements;
+        }
+        const nextElement = this.flowBuilderItems.find(e => e.name === targetReference);
+        if (nextElement) {
+            routeElements.push({ label: nextElement.label, name: nextElement.name });
+            let nextReference;
+            if (implementsLoop(nextElement)) {
+                nextReference = nextElement.noMoreValuesConnector
+                    ? nextElement.noMoreValuesConnector.targetReference
+                    : undefined;
+            } else if (implementsDecision(nextElement)) {
+                nextReference = nextElement.defaultConnector ? nextElement.defaultConnector.targetReference : undefined;
+            } else {
+                nextReference = nextElement.connector ? nextElement.connector.targetReference : undefined;
+            }
+            this.traceDecisionRouteElements(routeElements, nextReference);
+        }
+        return routeElements;
+    }
+
+    private convertToReadableAssingment(assignment: Assignment): ReadableAssignment {
+        const assignments: Array<ReadableAssignmentItem> = toArray<AssignmentItem>(assignment.assignmentItems).map(
+            item => ({
+                reference: item.assignToReference,
+                operator: item.operator,
+                value: this.resolveValue(item.value),
+            })
+        );
+        return {
+            type: 'assignment',
+            name: assignment.name,
+            label: assignment.label,
+            description: assignment.description,
+            assignments,
+        };
+    }
+
+    private convertToReadableLoop(loop: Loop): ReadableLoop {
+        const elements = loop.nextValueConnector
+            ? this.getReadableFlowElements([], loop.nextValueConnector.targetReference)
+            : [];
+        return {
+            type: 'loop',
+            name: loop.name,
+            label: loop.label,
+            description: loop.description,
+            elements,
         };
     }
 }
