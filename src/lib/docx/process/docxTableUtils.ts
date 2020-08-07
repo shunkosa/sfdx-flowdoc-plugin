@@ -1,5 +1,5 @@
 import { Table, TableRow, TableCell, Paragraph, TextRun, BorderStyle } from 'docx';
-import { ReadableCondition, ReadableActionItemParameter } from '../../../types/converter';
+import { ReadableCondition, ReadableActionItemParameter } from '../../../types/converter/process';
 
 const CELL_DEFAULT_MARGIN = {
     top: 20,

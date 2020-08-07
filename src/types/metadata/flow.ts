@@ -42,7 +42,7 @@ export function implementsActionCall(arg: any): arg is ActionCall {
 }
 
 export interface Decision extends Node {
-    processMetadataValues?: ProcessMetadataValue | Array<ProcessMetadataValue>;
+    processMetadataValues?: ProcessMetadataValue;
     rules: any;
     defaultConnector: any;
     defaultConnectorLabel: string;

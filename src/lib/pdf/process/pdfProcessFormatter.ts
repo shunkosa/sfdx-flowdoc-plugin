@@ -2,11 +2,11 @@ import { th, h2, h3 } from '../../../style/text';
 import i18n from '../../../config/i18n';
 import {
     ReadableProcess,
-    ReadableDecision,
+    ReadableProcessDecision,
     ReadableCondition,
     ReadableActionItem,
     ReadableWaitEventSummary,
-} from '../../../types/converter';
+} from '../../../types/converter/process';
 import StartConditionFormatter from './startConditionFormatter';
 import { toUpperSnakeCase } from '../../util/stringUtils';
 
@@ -76,7 +76,7 @@ export default class PdfProcessFormatter {
         return content;
     };
 
-    private buildDecision(decision: ReadableDecision) {
+    private buildDecision(decision: ReadableProcessDecision) {
         const table = {
             unbreakable: true,
             table: {

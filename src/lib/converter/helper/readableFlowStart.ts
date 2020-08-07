@@ -1,4 +1,4 @@
-import { ReadableStart } from '../../../types/converter';
+import { ReadableStart } from '../../../types/converter/flow';
 
 export default class ReadableFlowStartElement {
     flow;

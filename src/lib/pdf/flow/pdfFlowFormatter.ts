@@ -1,6 +1,6 @@
 import i18n from '../../../config/i18n';
 import { th } from '../../../style/text';
-import { ReadableFlow } from '../../../types/converter';
+import { ReadableFlow } from '../../../types/converter/flow';
 
 export default class PdfProcessFormatter {
     flow: ReadableFlow;

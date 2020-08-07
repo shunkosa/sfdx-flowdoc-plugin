@@ -7,7 +7,7 @@ import {
     ReadableLoop,
     ReadableFlowDecisionRoute,
     ReadableFlowDecision,
-} from '../../../types/converter';
+} from '../../../types/converter/flow';
 import {
     Flow,
     FlowBuilderItem,

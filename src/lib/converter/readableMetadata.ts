@@ -1,5 +1,5 @@
 import { InputParamValue, Flow } from '../../types/metadata/flow';
-import { IteratableFlow } from '../../types/converter';
+import { IteratableFlow } from '../../types/converter/main';
 import { RecordLookup } from '../../types/metadata/flowRecordAction';
 import { implementsProcessMetadataValue, ProcessMetadataValue } from '../../types/metadata/processMetadataValue';
 import { unescapeHtml } from '../util/stringUtils';

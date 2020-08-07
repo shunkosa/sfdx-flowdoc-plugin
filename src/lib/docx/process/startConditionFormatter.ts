@@ -1,5 +1,5 @@
 import { Paragraph } from 'docx';
-import { ReadableProcess } from '../../../types/converter';
+import { ReadableProcess } from '../../../types/converter/process';
 import { createHorizontalHeaderTable, createProcessConditionTable } from './docxTableUtils';
 
 export default class StartConditionFormatter {

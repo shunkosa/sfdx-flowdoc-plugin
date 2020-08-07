@@ -1,5 +1,5 @@
 import { th } from '../../../style/text';
-import { ReadableProcess } from '../../../types/converter';
+import { ReadableProcess } from '../../../types/converter/process';
 
 export default class StartConditionFormatter {
     flow: ReadableProcess;

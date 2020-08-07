@@ -1,6 +1,6 @@
 import { toArray } from '../util/arrayUtils';
 import { Flow } from '../../types/metadata/flow';
-import { IteratableFlow } from '../../types/converter';
+import { IteratableFlow } from '../../types/converter/main';
 
 export default function convertToIteratableMetadata(flow: Flow): IteratableFlow {
     return {

@@ -5,8 +5,8 @@ import {
     ReadableActionItem,
     ReadableScheduledActionSection,
     ReadableWaitEventSummary,
-    ReadableDecision,
-} from '../../../types/converter';
+    ReadableProcessDecision,
+} from '../../../types/converter/process';
 import { ActionCall, implementsActionCall, Decision } from '../../../types/metadata/flow';
 import {
     getRecordLookupFilter,
@@ -91,8 +91,8 @@ export default class ReadableProcessMetadata extends ReadableMetadata {
             });
     }
 
-    private convertToReadableDecision(decision: Decision): ReadableDecision {
-        const readableDecision: ReadableDecision = {
+    private convertToReadableDecision(decision: Decision): ReadableProcessDecision {
+        const readableDecision: ReadableProcessDecision = {
             label: decision.rules.label,
             criteria: this.getActionExecutionCriteria(decision),
             conditionLogic: decision.rules.conditionLogic.toUpperCase(),

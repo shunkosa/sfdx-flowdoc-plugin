@@ -1,5 +1,6 @@
 import { Flow } from '../../types/metadata/flow';
-import { ReadableProcess, ReadableFlow } from '../../types/converter';
+import { ReadableProcess } from '../../types/converter/process';
+import { ReadableFlow } from '../../types/converter/flow';
 import ReadableFlowMetadata from './helper/readableFlow';
 import ReadableProcessMetadata from './helper/readableProcess';
 

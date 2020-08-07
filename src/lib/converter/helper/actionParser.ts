@@ -2,7 +2,7 @@ import { ActionCall, InputParamValue } from '../../../types/metadata/flow';
 import { RecordCreate, RecordUpdate, RecordFilter, RecordLookup } from '../../../types/metadata/flowRecordAction';
 import { toArray } from '../../util/arrayUtils';
 import { ProcessMetadataValue } from '../../../types/metadata/processMetadataValue';
-import { ReadableCondition, ReadableActionItem, ReadableActionItemParameter } from '../../../types/converter';
+import { ReadableCondition, ReadableActionItem, ReadableActionItemParameter } from '../../../types/converter/process';
 
 const layout = require('./actionLayout.json');
 
