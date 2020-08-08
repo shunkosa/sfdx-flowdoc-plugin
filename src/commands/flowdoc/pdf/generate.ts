@@ -9,13 +9,13 @@ import {
     ReadableFlowMetadataConverter,
 } from '../../../lib/converter/metadataConverter';
 import { isSupported, isProcess } from '../../../lib/util/flowUtils';
+import { API_VERSION } from '../../../lib/converter/helper/constants';
 
 const Pdf = require('pdfmake');
 
 Messages.importMessagesDirectory(__dirname);
 const messages = Messages.loadMessages('sfdx-flowdoc-plugin', 'messages');
 
-const API_VERSION = '48.0';
 export default class Generate extends SfdxCommand {
     public static description = messages.getMessage('commandDescription');
 
