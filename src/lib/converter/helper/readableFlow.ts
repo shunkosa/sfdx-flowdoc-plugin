@@ -202,7 +202,7 @@ export default class ReadableFlowMetadata extends ReadableMetadata {
         if (!filters) {
             return undefined;
         }
-        return filters.map(f => ({
+        return toArray(filters).map(f => ({
             field: f.field,
             operator: f.operator,
             value: this.resolveValue(f.value),
