@@ -69,8 +69,8 @@ export interface ReadableRecordLookup extends ReadableFlowElement {
     filterCondition: 'NONE' | 'MEET_ALL_CONDITIONS';
     filters?: Array<ReadableFlowRecordLookupFilter>;
     sortBy: {
-        order: 'NONE' | 'ASC' | 'DSC';
-        field: string;
+        order: string;
+        field?: string;
     };
     numberOfRecords: 'ONLY_FIRST' | 'ALL';
     output: {
@@ -78,11 +78,6 @@ export interface ReadableRecordLookup extends ReadableFlowElement {
         fields?: Array<any>;
         assignments?: Array<any>;
     };
-}
-
-export interface OutputAssignment {
-    field: string;
-    reference: string;
 }
 
 export interface ReadableFlowRecordLookupFilter {

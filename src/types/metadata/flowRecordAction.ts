@@ -36,6 +36,10 @@ export interface RecordUpdate extends Node {
 
 export interface RecordLookup extends Node {
     processMetadataValues?: any;
+    object: string;
+    getFirstRecordOnly?: boolean;
+    storeOutputAutomatically?: boolean;
+    sortOrder?: 'Asc' | 'Dsc';
     filters?: RecordFilter | RecordFilter[];
     connector: {
         targetReference: string;
@@ -62,4 +66,8 @@ export function implementsRecordCreate(arg: any): arg is RecordCreate {
 
 export function implementsRecordUpdate(arg: any): arg is RecordUpdate {
     return arg.actionType === 'recordUpdate';
+}
+
+export function implementsRecordLookup(arg: any): arg is RecordLookup {
+    return arg.storeOutputAutomatically || arg.outputReference || arg.assignNullValuesIfNoRecordFound;
 }

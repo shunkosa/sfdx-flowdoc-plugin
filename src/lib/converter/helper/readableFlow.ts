@@ -7,6 +7,7 @@ import {
     ReadableLoop,
     ReadableFlowDecisionRoute,
     ReadableFlowDecision,
+    ReadableRecordLookup,
 } from '../../../types/converter/flow';
 import {
     Flow,
@@ -21,6 +22,7 @@ import {
 } from '../../../types/metadata/flow';
 import { toArray } from '../../util/arrayUtils';
 import ReadableFlowStartElement from './readableFlowStart';
+import { RecordLookup, implementsRecordLookup } from '../../../types/metadata/flowRecordAction';
 
 export default class ReadableFlowMetadata extends ReadableMetadata {
     flowBuilderItems: ReadonlyArray<FlowBuilderItem>;
@@ -69,16 +71,8 @@ export default class ReadableFlowMetadata extends ReadableMetadata {
         }
         const nextElement = this.flowBuilderItems.find(e => e.name === targetReference);
         if (nextElement) {
-            /* const readableNextElement = this.convertToReadableFlowElement(nextElement);
-            if (readableNextElement) {
-                currentElements.push(readableNextElement);
-            }
-            if (implementsAssignment(nextElement)) {
-                const nextReference = nextElement.connector ? nextElement.connector.targetReference : undefined;
-                this.getReadableFlowElements(currentElements, nextReference);
-            }
-            */
             this.visitedItemNameSet.add(nextElement.name);
+            // Get the details of element and find next. Elements inside loop and decision results are traced in each convert method.
             let nextReference;
             if (implementsLoop(nextElement)) {
                 nextReference = nextElement.noMoreValuesConnector
@@ -86,13 +80,11 @@ export default class ReadableFlowMetadata extends ReadableMetadata {
                     : undefined;
                 currentElements.push(this.convertToReadableLoop(nextElement));
             } else if (implementsDecision(nextElement)) {
-                // nextReference = nextElement.defaultConnector ? nextElement.defaultConnector.targetReference : undefined;
                 currentElements.push(this.convertToReadableDecision(nextElement));
             } else {
                 nextReference = nextElement.connector ? nextElement.connector.targetReference : undefined;
-                currentElements.push({ label: nextElement.label, name: nextElement.name });
+                currentElements.push(this.convertToReadableFlowElement(nextElement));
             }
-
             this.getReadableFlowElements(currentElements, nextReference);
         }
         return currentElements;
@@ -102,8 +94,8 @@ export default class ReadableFlowMetadata extends ReadableMetadata {
         if (implementsAssignment(flowBuilderItem)) {
             return this.convertToReadableAssingment(flowBuilderItem);
         }
-        if (implementsLoop(flowBuilderItem)) {
-            return this.convertToReadableLoop(flowBuilderItem);
+        if (implementsRecordLookup(flowBuilderItem)) {
+            return this.convertToReadableRecordLookup(flowBuilderItem);
         }
         return undefined;
     }
@@ -187,4 +179,33 @@ export default class ReadableFlowMetadata extends ReadableMetadata {
             elements,
         };
     }
+
+    private convertToReadableRecordLookup(lookup: RecordLookup): ReadableRecordLookup {
+        return {
+            type: 'lookup',
+            name: lookup.name,
+            label: lookup.label,
+            object: lookup.object,
+            filterCondition: lookup.filters ? 'MEET_ALL_CONDITIONS' : 'NONE',
+            filters: this.getReadableFlowRecordLookupFilters(lookup.filters),
+            sortBy: {
+                order: lookup.sortOrder ? lookup.sortOrder.toUpperCase() : 'NONE',
+            },
+            numberOfRecords: lookup.getFirstRecordOnly ? 'ONLY_FIRST' : 'ALL',
+            output: {
+                method: lookup.storeOutputAutomatically ? 'ALL_FIELDS' : undefined,
+            },
+        };
+    }
+
+    getReadableFlowRecordLookupFilters = filters => {
+        if (!filters) {
+            return undefined;
+        }
+        return filters.map(f => ({
+            field: f.field,
+            operator: f.operator,
+            value: this.resolveValue(f.value),
+        }));
+    };
 }
