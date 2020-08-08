@@ -1,0 +1,28 @@
+{
+    "fullName": "Start_Element",
+    "interviewLabel": "Start_Element {!$Flow.CurrentDateTime}",
+    "label": "Start_Element",
+    "processMetadataValues": [
+        {
+            "name": "BuilderType",
+            "value": {
+                "stringValue": "LightningFlowBuilder"
+            }
+        },
+        {
+            "name": "OriginBuilderType",
+            "value": {
+                "stringValue": "LightningFlowBuilder"
+            }
+        }
+    ],
+    "processType": "AutoLaunchedFlow",
+    "start": {
+        "locationX": "50",
+        "locationY": "50",
+        "object": "Case",
+        "recordTriggerType": "Update",
+        "triggerType": "RecordAfterSave"
+    },
+    "status": "InvalidDraft"
+}
