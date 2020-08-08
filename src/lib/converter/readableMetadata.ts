@@ -4,15 +4,19 @@ import { RecordLookup } from '../../types/metadata/flowRecordAction';
 import { implementsProcessMetadataValue, ProcessMetadataValue } from '../../types/metadata/processMetadataValue';
 import { unescapeHtml } from '../util/stringUtils';
 import convertToIteratableMetadata from './iteratableMetadata';
+import { isProcess } from '../util/flowUtils';
 
 export default class ReadableMetadata {
     protected readonly flow: IteratableFlow;
 
     protected readonly name: string;
 
+    protected readonly isProcess: boolean;
+
     constructor(flow: Flow, name: string) {
         this.flow = convertToIteratableMetadata(flow);
         this.name = name;
+        this.isProcess = isProcess(flow);
     }
 
     /**
@@ -107,6 +111,7 @@ export default class ReadableMetadata {
         const key = Object.keys(value)[0]; // stringValue or elementReference
         if (key === 'elementReference') {
             if (!value[key].includes('.')) {
+                // reference to formula
                 return this.getFormulaExpression(value[key]);
             }
             return this.replaceVariableNameToObjectName(value[key]);
@@ -114,8 +119,9 @@ export default class ReadableMetadata {
         return value[key];
     };
 
+    // for process builder
     private replaceVariableNameToObjectName(string) {
-        if (!string.includes('.')) {
+        if (!string.includes('.') || !this.isProcess) {
             return string;
         }
         const variableName = string.split('.')[0];
